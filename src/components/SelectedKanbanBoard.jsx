@@ -6,10 +6,11 @@ export default function SelectedKanbanBoard({ workFlow, onAddColumn }) {
   const [showColumn, setShowColumn] = useState(false);
 
   function handleShowCreateColumn() {
-    setShowColumn(prev => !prev);
+    setShowColumn(!showColumn);
   }
 
   function handleCreateColumn(title) {
+   
     onAddColumn(title);
   }
 

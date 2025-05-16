@@ -6,7 +6,10 @@ export default function CreateColumn({onAdd,done}){
   function handleColumnTitle(){
     
     let enteredTitle = columnTitle.current.value;
-
+     if(enteredTitle.trim()===''){
+      alert("please insert value")
+      return;
+    }
     onAdd({title:enteredTitle})
     done();
   }

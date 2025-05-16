@@ -1,4 +1,5 @@
 export default function Sidebar({ startWorkFlow, workFlows, onSelectKanban }) {
+  
   const anchorClass = "block mb-4 text-gray-800 text-base no-underline";
   return (
     <aside className="w-[250px] bg-white p-5 border-r border-gray-200 flex flex-col items-start">
@@ -10,7 +11,7 @@ export default function Sidebar({ startWorkFlow, workFlows, onSelectKanban }) {
       <div>
         <button className="mt-2" onClick={startWorkFlow}>Add WorkFlow</button>
       </div>
-      <ul className="mt-5 bg-stone-200 rounded-md flex flex-col px-2 py-2">
+      {workFlows.length ==0 ? <ul></ul> :<ul className="mt-5 bg-stone-200 rounded-md flex flex-col px-2 py-2">
         {workFlows.map((work) => {
           return (
             <li key={work.id} className="mt-2">
@@ -18,7 +19,7 @@ export default function Sidebar({ startWorkFlow, workFlows, onSelectKanban }) {
             </li>
           );
         })}
-      </ul>
+      </ul>}
     </aside>
   );
 }
