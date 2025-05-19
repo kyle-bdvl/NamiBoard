@@ -4,12 +4,24 @@ import Sidebar from './components/Sidebar'
 import SelectedKanbanBoard from './components/SelectedKanbanBoard'
 import './App.css'
 import NoBoardSelected from './components/NoBoardSelected';
+import LoginPage from './components/LoginPage';
+
+
 
 function App() {
+  const [loggedIn, setLoggedIn] = useState(false);
   const [projectsState, setProjectsState] = useState({
     selectedWorkFlowId: undefined,
     WorkFlow: []
   });
+  const handleLogin = () => {
+    setLoggedIn(true);
+  }
+  if (!loggedIn) {
+    return (
+      <LoginPage onLogin={handleLogin} />
+    )
+  }
   
   // function to update the columns inside the workFlow 
  function handleAddColumnToWorkflow(columnData) {
