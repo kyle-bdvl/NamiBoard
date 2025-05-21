@@ -21,6 +21,7 @@ function App() {
       <LoginPage onLogin={handleLogin} />
     )
   }
+  console.log("i am in strict mode")
   
   // function to update the columns inside the workFlow 
  function handleAddColumnToWorkflow(columnData) {

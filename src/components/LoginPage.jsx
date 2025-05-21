@@ -29,6 +29,7 @@ function handleSubmit(e){
             <input type="text"
             placeholder="Please enter your email"
             className="border border-gray-300 p-2 mb-4 w-full rounded"
+            // two way binding
             value={email} 
             onChange={(e)=>setEmail(e.target.value)}/>
 
@@ -51,3 +52,5 @@ function handleSubmit(e){
     );
 }
 export default LoginPage;
+
+// new comment is added 
