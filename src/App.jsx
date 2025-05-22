@@ -1,11 +1,12 @@
 import { useState } from 'react'
+import { Routes, Route, Navigate } from 'react-router-dom'
 import CreateKanbanBoard from './components/createKanbanBoard.jsx'
 import Sidebar from './components/Sidebar'
 import SelectedKanbanBoard from './components/SelectedKanbanBoard'
+import NoBoardSelected from './components/NoBoardSelected'
+import LoginPage from './components/LoginPage'
+import SignUp from './components/SignUpPage'
 import './App.css'
-import NoBoardSelected from './components/NoBoardSelected';
-import LoginPage from './components/LoginPage';
-
 
 function App() {
   const [loggedIn, setLoggedIn] = useState(false);
@@ -13,111 +14,85 @@ function App() {
     selectedWorkFlowId: undefined,
     WorkFlow: []
   });
-  const handleLogin = () => {
-    setLoggedIn(true);
-  }
-  if (!loggedIn) {
-    return (
-      <LoginPage onLogin={handleLogin} />
-    )
-  }
-  console.log("i am in strict mode")
-  
-  // function to update the columns inside the workFlow 
- function handleAddColumnToWorkflow(columnData) {
-  setProjectsState((prevState) => {
-    const updatedWorkflows = prevState.WorkFlow.map(workflow => {
-      if (workflow.id === prevState.selectedWorkFlowId) {
-        return {
-          ...workflow,
-          columns: [{ id: Math.random(), ...columnData }, ...workflow.columns]
-        };
-      }
-      return workflow;
+
+  const handleLogin = () => setLoggedIn(true);
+
+  function handleAddColumnToWorkflow(columnData) {
+    setProjectsState(prevState => {
+      const updatedWorkflows = prevState.WorkFlow.map(workflow => {
+        if (workflow.id === prevState.selectedWorkFlowId) {
+          return {
+            ...workflow,
+            columns: [{ id: Math.random(), ...columnData }, ...workflow.columns]
+          };
+        }
+        return workflow;
+      });
+
+      return { ...prevState, WorkFlow: updatedWorkflows };
     });
+  }
 
-    return {
-      ...prevState,
-      WorkFlow: updatedWorkflows
-    };
-  });
-}
-
-
-
-  // to change the page to adding a workFlow
   function handleStartWorkFlow() {
-    setProjectsState((prevState) => {
-      return {
-        ...prevState,
-        selectedWorkFlowId: null,
-      }
-    })
+    setProjectsState(prevState => ({ ...prevState, selectedWorkFlowId: null }));
   }
 
-  // function to let to user click off if they don't want to add a workFlow 
   function handleCancelWorkFlow() {
-    setProjectsState((prevState) => {
-      return {
-        ...prevState,
-        selectedWorkFlowId: undefined,
-      };
-    })
+    setProjectsState(prevState => ({ ...prevState, selectedWorkFlowId: undefined }));
   }
 
-  // to save the workFlow 
   function handleAddWorkFlow(dataPassed) {
-    setProjectsState((prevState) => {
-      const workFlowId = Math.random();
-      const newWorkFlow = {
-        ...dataPassed,
-        id: workFlowId, 
-        columns:[]
-      }
-      return {
-        ...prevState,
-        selectedWorkFlowId: undefined,
-        WorkFlow: [newWorkFlow, ...prevState.WorkFlow]
-      }
-    })
+    const workFlowId = Math.random();
+    const newWorkFlow = { ...dataPassed, id: workFlowId, columns: [] };
+
+    setProjectsState(prevState => ({
+      ...prevState,
+      selectedWorkFlowId: undefined,
+      WorkFlow: [newWorkFlow, ...prevState.WorkFlow]
+    }));
   }
 
-  // Selecting the Kanban Board from the Sidebar 
-  function handleSelectKanban(id){ 
-    setProjectsState((prevState)=>{
-      return{
-        ...prevState,
-        selectedWorkFlowId:id
-      } 
-
-    })
+  function handleSelectKanban(id) {
+    setProjectsState(prevState => ({ ...prevState, selectedWorkFlowId: id }));
   }
-  // to find the selected project when you click on the sidebar
-  let selectedWorkFlow = projectsState.WorkFlow.find(
-    (workflow)=>workflow.id === projectsState.selectedWorkFlowId
+
+  const selectedWorkFlow = projectsState.WorkFlow.find(
+    workflow => workflow.id === projectsState.selectedWorkFlowId
   );
 
-  let content = (<SelectedKanbanBoard workFlow={selectedWorkFlow} onAddColumn={handleAddColumnToWorkflow} />);
-
+  let content = <SelectedKanbanBoard workFlow={selectedWorkFlow} onAddColumn={handleAddColumnToWorkflow} />;
   if (projectsState.selectedWorkFlowId === null) {
-    content = (<CreateKanbanBoard onAdd={handleAddWorkFlow} onCancel={handleCancelWorkFlow} />)
+    content = <CreateKanbanBoard onAdd={handleAddWorkFlow} onCancel={handleCancelWorkFlow} />;
   } else if (projectsState.selectedWorkFlowId === undefined) {
-    content = (<NoBoardSelected startWorkFlow={handleStartWorkFlow} />);
+    content = <NoBoardSelected startWorkFlow={handleStartWorkFlow} />;
   }
-  console.log(projectsState);
-  return (
-    <>
-      <main className="h-screen flex gap-8">
-        <Sidebar
-          startWorkFlow={handleStartWorkFlow}
-          workFlows={projectsState.WorkFlow}
-          onSelectKanban={handleSelectKanban}
-        />
-        {content}
-      </main>
 
-    </>
-  )
+  return (
+    <Routes>
+      <Route
+        path="/"
+        element={
+          loggedIn ? (
+            <main className="h-screen flex gap-8">
+              <Sidebar
+                startWorkFlow={handleStartWorkFlow}
+                workFlows={projectsState.WorkFlow}
+                onSelectKanban={handleSelectKanban}
+              />
+              {content}
+            </main>
+          ) : (
+            <LoginPage onLogin={handleLogin} />
+          )
+        }
+      />
+      {/* Add another route for /Login */}
+      <Route path="/Login" element={<LoginPage onLogin={handleLogin} />} />
+      <Route path="/SignUp" element={<SignUp />} />
+      {/* Redirect unknown paths */}
+      <Route path="*" element={<Navigate to="/" />} />
+    </Routes>
+  );
 }
 
 export default App;
