@@ -54,7 +54,25 @@ function LoginPage({ onLogin }) {
       }}
     >
       <form
-        onSubmit={handleSubmit}
+        onSubmit={async (e) => {
+          e.preventDefault();
+
+          if (email.trim() === "" || password.trim() === "") {
+            setError("Please fill in all fields");
+            return;
+          }
+
+          try {
+            await loginUser(email, password);
+            setError("");
+            onLogin();         // this sets loggedIn = true in App
+            navigate("/");     // ⬅️ this is what you're missing!
+          } catch (err) {
+            setError(err.message);
+            setEmail("");
+            setPassword("");
+          }
+        }}
         className="bg-white p-8 rounded-2xl shadow-2xl w-full max-w-md"
       >
         <h2 className="text-2xl font-extrabold mb-6 text-center text-indigo-700 tracking-wide">

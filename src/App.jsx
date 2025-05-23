@@ -68,31 +68,49 @@ function App() {
   }
 
   return (
-    <Routes>
-      <Route
-        path="/"
-        element={
-          loggedIn ? (
-            <main className="h-screen flex gap-8">
-              <Sidebar
-                startWorkFlow={handleStartWorkFlow}
-                workFlows={projectsState.WorkFlow}
-                onSelectKanban={handleSelectKanban}
-              />
-              {content}
-            </main>
-          ) : (
-            <LoginPage onLogin={handleLogin} />
-          )
-        }
-      />
-      {/* Add another route for /Login */}
-      <Route path="/Login" element={<LoginPage onLogin={handleLogin} />} />
-      <Route path="/SignUp" element={<SignUp />} />
-      {/* Redirect unknown paths */}
-      <Route path="*" element={<Navigate to="/" />} />
-    </Routes>
-  );
+  <Routes>
+    <Route
+      path="/"
+      element={
+        loggedIn ? (
+          <main className="h-screen flex gap-8">
+            <Sidebar
+              startWorkFlow={handleStartWorkFlow}
+              workFlows={projectsState.WorkFlow}
+              onSelectKanban={handleSelectKanban}
+            />
+            {
+              projectsState.selectedWorkFlowId === null ? (
+                <CreateKanbanBoard
+                  onAdd={handleAddWorkFlow}
+                  onCancel={handleCancelWorkFlow}
+                />
+              ) : projectsState.selectedWorkFlowId === undefined ? (
+                <NoBoardSelected
+                  startWorkFlow={handleStartWorkFlow}
+                />
+              ) : (
+                <SelectedKanbanBoard
+                  workFlow={projectsState.WorkFlow.find(
+                    workflow => workflow.id === projectsState.selectedWorkFlowId
+                  )}
+                  onAddColumn={handleAddColumnToWorkflow}
+                />
+              )
+            }
+          </main>
+        ) : (
+          <Navigate to="/Login" />
+        )
+      }
+    />
+
+    <Route path="/Login" element={<LoginPage onLogin={handleLogin} />} />
+    <Route path="/SignUp" element={<SignUp />} />
+    <Route path="*" element={<Navigate to="/" />} />
+  </Routes>
+);
+
 }
 
 export default App;
