@@ -21,28 +21,179 @@ function App() {
       <LoginPage onLogin={handleLogin} />
     )
   }
-  
+
   // function to update the columns inside the workFlow 
- function handleAddColumnToWorkflow(columnData) {
-  setProjectsState((prevState) => {
-    const updatedWorkflows = prevState.WorkFlow.map(workflow => {
-      if (workflow.id === prevState.selectedWorkFlowId) {
-        return {
-          ...workflow,
-          columns: [{ id: Math.random(), ...columnData }, ...workflow.columns]
-        };
-      }
-      return workflow;
+  function handleAddColumnToWorkflow(columnData) {
+    setProjectsState((prevState) => {
+      const updatedWorkflows = prevState.WorkFlow.map(workflow => {
+        if (workflow.id === prevState.selectedWorkFlowId) {
+          return {
+            ...workflow,
+            columns: [{ id: Math.random(), ...columnData }, ...workflow.columns]
+          };
+        }
+        return workflow;
+      });
+
+      return {
+        ...prevState,
+        WorkFlow: updatedWorkflows
+      };
     });
+  }
 
-    return {
-      ...prevState,
-      WorkFlow: updatedWorkflows
-    };
-  });
-}
+  function handleDeleteColumn(columnId) {
+    setProjectsState((prevState) => {
+      const updatedWorkflows = prevState.WorkFlow.map(workflow => {
+        if (workflow.id === prevState.selectedWorkFlowId) {
+          const updatedColumns = workflow.columns.filter(column => column.id !== columnId);
+          return {
+            ...workflow,
+            columns: updatedColumns
+          };
+        }
+        return workflow;
+      });
+
+      return {
+        ...prevState,
+        WorkFlow: updatedWorkflows
+      };
+    });
+  }
 
 
+  function handleAddTaskToColumn(columnId, title, description, file) {
+    setProjectsState((prevState) => {
+      const updatedWorkflows = prevState.WorkFlow.map(workflow => {
+        if (workflow.id === prevState.selectedWorkFlowId) {
+          const updatedColumns = workflow.columns.map(column => {
+            if (column.id === columnId) {
+              const updatedTasks = [
+                ...(column.tasks || []),
+                {
+                  id: Date.now(),
+                  title,
+                  description,
+                  file: file || null,
+                },
+              ];
+              return {
+                ...column,
+                tasks: updatedTasks
+              };
+            }
+            return column;
+          });
+          return {
+            ...workflow,
+            columns: updatedColumns
+          };
+        }
+        return workflow;
+      });
+
+      return {
+        ...prevState,
+        WorkFlow: updatedWorkflows
+      };
+    });
+  }
+
+
+  function handleDeleteTask(columnId, taskId) {
+    setProjectsState((prevState) => {
+      const updatedWorkflows = prevState.WorkFlow.map((workflow) => {
+        if (workflow.id === prevState.selectedWorkFlowId) {
+          const updatedColumns = workflow.columns.map((column) => {
+            if (column.id === columnId) {
+              const updatedTasks = (column.tasks || []).filter((task) => task.id !== taskId);
+              return {
+                ...column,
+                tasks: updatedTasks
+              };
+            }
+            return column;
+          });
+
+          return {
+            ...workflow,
+            columns: updatedColumns
+          };
+        }
+        return workflow;
+      });
+
+      return {
+        ...prevState,
+        WorkFlow: updatedWorkflows
+      };
+    });
+  }
+  // ...existing code...
+
+  function handleEditColumn(columnId, newTitle, newDescription) {
+    setProjectsState((prevState) => {
+      const updatedWorkflows = prevState.WorkFlow.map(workflow => {
+        if (workflow.id === prevState.selectedWorkFlowId) {
+          const updatedColumns = workflow.columns.map(column =>
+            column.id === columnId
+              ? { ...column, title: newTitle, description: newDescription }
+              : column
+          );
+          return { ...workflow, columns: updatedColumns };
+        }
+        return workflow;
+      });
+      return { ...prevState, WorkFlow: updatedWorkflows };
+    });
+  }
+
+  function handleEditTask(columnId, taskId, newTitle, newDescription) {
+    setProjectsState((prevState) => {
+      const updatedWorkflows = prevState.WorkFlow.map(workflow => {
+        if (workflow.id === prevState.selectedWorkFlowId) {
+          const updatedColumns = workflow.columns.map(column => {
+            if (column.id === columnId) {
+              const updatedTasks = (column.tasks || []).map(task =>
+                task.id === taskId
+                  ? { ...task, title: newTitle, description: newDescription }
+                  : task
+              );
+              return { ...column, tasks: updatedTasks };
+            }
+            return column;
+          });
+          return { ...workflow, columns: updatedColumns };
+        }
+        return workflow;
+      });
+      return { ...prevState, WorkFlow: updatedWorkflows };
+    });
+  }
+
+  function handleAddTaskFile(columnId, taskId, file) {
+    setProjectsState((prevState) => {
+      const updatedWorkflows = prevState.WorkFlow.map(workflow => {
+        if (workflow.id === prevState.selectedWorkFlowId) {
+          const updatedColumns = workflow.columns.map(column => {
+            if (column.id === columnId) {
+              const updatedTasks = (column.tasks || []).map(task =>
+                task.id === taskId ? { ...task, file } : task
+              );
+              return { ...column, tasks: updatedTasks };
+            }
+            return column;
+          });
+          return { ...workflow, columns: updatedColumns };
+        }
+        return workflow;
+      });
+      return { ...prevState, WorkFlow: updatedWorkflows };
+    });
+  }
+
+  
 
   // to change the page to adding a workFlow
   function handleStartWorkFlow() {
@@ -70,8 +221,8 @@ function App() {
       const workFlowId = Math.random();
       const newWorkFlow = {
         ...dataPassed,
-        id: workFlowId, 
-        columns:[]
+        id: workFlowId,
+        columns: []
       }
       return {
         ...prevState,
@@ -82,21 +233,30 @@ function App() {
   }
 
   // Selecting the Kanban Board from the Sidebar 
-  function handleSelectKanban(id){ 
-    setProjectsState((prevState)=>{
-      return{
+  function handleSelectKanban(id) {
+    setProjectsState((prevState) => {
+      return {
         ...prevState,
-        selectedWorkFlowId:id
-      } 
+        selectedWorkFlowId: id
+      }
 
     })
   }
   // to find the selected project when you click on the sidebar
   let selectedWorkFlow = projectsState.WorkFlow.find(
-    (workflow)=>workflow.id === projectsState.selectedWorkFlowId
+    (workflow) => workflow.id === projectsState.selectedWorkFlowId
   );
 
-  let content = (<SelectedKanbanBoard workFlow={selectedWorkFlow} onAddColumn={handleAddColumnToWorkflow} />);
+   let content = (<SelectedKanbanBoard
+    workFlow={selectedWorkFlow}
+    onAddColumn={handleAddColumnToWorkflow}
+    onAddTask={handleAddTaskToColumn}
+    onDeleteColumn={handleDeleteColumn}
+    onEditColumn={handleEditColumn}
+    onDeleteTask={handleDeleteTask}
+    onEditTask={handleEditTask}
+    onAddTaskFile={handleAddTaskFile}
+  />);
 
   if (projectsState.selectedWorkFlowId === null) {
     content = (<CreateKanbanBoard onAdd={handleAddWorkFlow} onCancel={handleCancelWorkFlow} />)
@@ -117,6 +277,8 @@ function App() {
 
     </>
   )
+
+
 }
 
 export default App;

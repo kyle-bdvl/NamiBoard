@@ -2,7 +2,8 @@ import {useState} from 'react';
 import Header from './Header.jsx';
 import CreateColumn from './CreateColumn.jsx';
 import Column from './Columns.jsx';
-export default function SelectedKanbanBoard({ workFlow, onAddColumn }) {
+
+export default function SelectedKanbanBoard({ workFlow, onAddColumn,onAddTask, onDeleteColumn, onDeleteTask }) {
   const [showColumn, setShowColumn] = useState(false);
 
   function handleShowCreateColumn() {
@@ -10,7 +11,6 @@ export default function SelectedKanbanBoard({ workFlow, onAddColumn }) {
   }
 
   function handleCreateColumn(title) {
-   
     onAddColumn(title);
   }
 
@@ -21,13 +21,12 @@ export default function SelectedKanbanBoard({ workFlow, onAddColumn }) {
         <CreateColumn onAdd={handleCreateColumn} done={handleShowCreateColumn} />
       ) : (
         <button 
-          className="max-w-min py-1.5 px-5 bg-amber-200 rounded-md" 
-          onClick={handleShowCreateColumn}
-        >
-          Create Column
+          className="w-37 py-1.5 px-3 cursor-pointer bg-blue-500 text-white rounded-md duration-200 hover:bg-blue-700 hover:drop-shadow-sm" 
+          onClick={handleShowCreateColumn}>
+          Create Column +
         </button>
       )}
-      <Column columns={workFlow.columns } />
+      <Column columns={workFlow.columns} onAddTask={onAddTask} onDeleteColumn={onDeleteColumn} onDeleteTask={onDeleteTask}/>
     </main>
   );
 }
