@@ -1,12 +1,21 @@
-export default function NoBoardSelected({startWorkFlow}){
-  return ( 
-    <div className=" mt-2 flex flex-col p-5 gap-2">
-      <img src="" alt="" />
-      <h2>No Project Selected</h2>
-      <p className="">Select a project or get started with a new Workflow</p>
-      <p>
-        <button className="mt-2 bg-blue-400 py-2 px-5 rounded-md hover:cursor-pointer hover:bg-blue-600" onClick={startWorkFlow}>Create New Project</button>
+export default function NoBoardSelected({ startWorkFlow }) {
+  return (
+    <div className="mt-8 flex flex-col items-center justify-center p-8 gap-4 bg-white rounded-lg shadow-md max-w-md mx-auto text-center">
+      <img 
+        src="https://cdn-icons-png.flaticon.com/512/565/565547.png" 
+        alt="No Project Selected" 
+        className="w-24 h-24 opacity-60 mx-auto"
+      />
+      <h2 className="text-2xl font-semibold text-gray-800">No Project Selected</h2>
+      <p className="text-gray-600 text-base">
+        Select a project or get started with a new Workflow
       </p>
+      <button 
+        className="mt-4 bg-blue-500 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-md transition-colors duration-300"
+        onClick={startWorkFlow}
+      >
+        Create New Project
+      </button>
     </div>
-  )
+  );
 }

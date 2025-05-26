@@ -225,7 +225,7 @@ function App() {
           path="/"
           element={
             loggedIn ? (
-              <main className="h-screen flex gap-8">
+              <main className="h-screen flex ">
                 <Sidebar
                   startWorkFlow={handleStartWorkFlow}
                   workFlows={projectsState.WorkFlow}

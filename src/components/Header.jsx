@@ -1,16 +1,25 @@
-export default function Header({workFlow}){
-    const userCircle = "w-18 h-18 bg-gray-200 rounded-full flex items-center justify-center text-center font-bold";
+export default function Header({ workFlow }) {
+  const userCircle =
+    "w-12 h-12 bg-blue-200 text-blue-800 rounded-full flex items-center justify-center font-semibold shadow-sm";
 
   return (
-    <div className="flex items-center justify-between mb-5 ">
-        <h1><strong>Title: </strong>{workFlow.title}</h1>
-        <p><strong>Objective :</strong> {workFlow.objective}</p>
-        {/* <input type="text" placeholder="Search..." className="w-[300px] px-3 py-2 border border-gray-300 rounded-lg" /> */}
-        
-        <div className="flex flex-row gap-6 ">
-          <div className={userCircle}>Molly Potter</div>
-        </div>
-       
+    <header className="flex flex-wrap items-center justify-between bg-white px-6 py-4 shadow rounded-md mb-5">
+      {/* Title and Objective Section */}
+      <div className="flex flex-col gap-1">
+        <h1 className="text-xl font-bold text-gray-800">
+          {workFlow.title || "Untitled Board"}
+        </h1>
+        <p className="text-sm text-gray-600 max-w-md">
+          <span className="font-semibold">Objective:</span>{" "}
+          {workFlow.objective || "No objective set."}
+        </p>
       </div>
+
+      {/* User Profile */}
+      <div className="flex items-center gap-4">
+        <div className={userCircle}>MP</div>
+        <span className="text-sm text-gray-700">Molly Potter</span>
+      </div>
+    </header>
   );
 }

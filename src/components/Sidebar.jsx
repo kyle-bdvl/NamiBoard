@@ -2,11 +2,14 @@ import Button from './Buttons';
 
 export default function Sidebar({ startWorkFlow, workFlows, onSelectKanban }) {
   return (
-    <aside className="w-[260px] bg-blue-100 p-6 border-r border-gray-300 flex flex-col gap-6 shadow-md">
+    <aside
+      className="w-[260px] bg-blue-100 p-6 border-r border-gray-300 flex flex-col gap-6"
+      style={{ boxShadow: '6px 0 15px -3px rgba(0, 0, 0, 0.2), 3px 0 8px -4px rgba(0, 0, 0, 0.1)' }}
+    >
       {/* Logo and Title */}
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-2 p-4 rounded-md text-Black">
         <img src="../src/assets/waveLogo.webp" alt="waveLogo" className="w-7 h-7" />
-        <h2 className="text-2xl font-bold text-gray-800">NamiBoard</h2>
+        <h2 className="text-2xl font-bold">NamiBoard</h2>
       </div>
 
       {/* Add Workflow Button */}
