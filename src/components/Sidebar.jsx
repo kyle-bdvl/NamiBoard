@@ -1,30 +1,43 @@
-import Button from './Buttons'
-export default function Sidebar({ startWorkFlow, workFlows, onSelectKanban }) {
+import Button from './Buttons';
 
-  const anchorClass = "block mb-4 text-gray-800 text-base no-underline";
+export default function Sidebar({ startWorkFlow, workFlows, onSelectKanban }) {
   return (
-    <aside className="w-[250px] bg-blue-300 p-5 border-r border-gray-200 flex flex-col items-start">
-      <div className="mb-8 flex flex-row gap-2 items-center">
-        <h2 className="text-2xl font-bold">NamiBoard </h2>
-        <img src="../src/assets/waveLogo.webp" alt="waveLogo" className="w-6 h-6" />
+    <aside className="w-[260px] bg-blue-100 p-6 border-r border-gray-300 flex flex-col gap-6 shadow-md">
+      {/* Logo and Title */}
+      <div className="flex items-center gap-2">
+        <img src="../src/assets/waveLogo.webp" alt="waveLogo" className="w-7 h-7" />
+        <h2 className="text-2xl font-bold text-gray-800">NamiBoard</h2>
       </div>
-      <h2 className="text-2xl">Your WorkFlows</h2>
+
+      {/* Add Workflow Button */}
       <div>
         <Button row={true} onClick={startWorkFlow}>
           Add WorkFlow
-          <img className="w-4 h-4" src="../src/assets/addIcon.png" alt="AddButton" />
+          <img className="w-4 h-4 ml-2" src="../src/assets/addIcon.png" alt="AddButton" />
         </Button>
-
       </div>
-      {workFlows.length == 0 ? <ul></ul> : <ul className="mt-5 bg-stone-200 rounded-md flex flex-col px-2 py-2">
-        {workFlows.map((work) => {
-          return (
-            <li key={work.id} className="mt-2">
-              <Button onClick={() => { onSelectKanban(work.id) }}>{work.title}</Button>
-            </li>
-          );
-        })}
-      </ul>}
+
+      {/* Workflow List */}
+      <div className="flex-1">
+        <h3 className="text-lg font-semibold text-gray-700 mb-2">Your Workflows</h3>
+        {workFlows.length === 0 ? (
+          <p className="text-sm text-gray-500 mt-2">No workflows yet.</p>
+        ) : (
+          <ul className="space-y-2 bg-white rounded-lg p-3 shadow-inner">
+            {workFlows.map((work) => (
+              <li key={work.id}>
+                <Button
+                  row={true}
+                  onClick={() => onSelectKanban(work.id)}
+                  className="w-full justify-start bg-white text-gray-800 hover:bg-blue-200"
+                >
+                  {work.title}
+                </Button>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
     </aside>
   );
 }
