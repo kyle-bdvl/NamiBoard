@@ -3,12 +3,12 @@ import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import ThemeSettings from './ThemeSettings';
 
-export default function Sidebar({ 
-  startWorkFlow, 
-  workFlows, 
-  onSelectKanban, 
-  onSideBarToggle, 
-  onLogout, 
+export default function Sidebar({
+  startWorkFlow,
+  workFlows,
+  onSelectKanban,
+  onSideBarToggle,
+  onLogout,
   settingsClicked,         // received from App.jsx
   setSettingsClicked         // received from App.jsx
 }) {
@@ -114,7 +114,7 @@ export default function Sidebar({
           {workFlows.length === 0 ? (
             <p className="text-sm text-gray-500 mt-2">No workflows yet.</p>
           ) : (
-            <ul className=" break-all space-y-2 bg-white rounded-lg p-3 shadow-inner">
+            <ul className="break-all space-y-2 bg-white rounded-lg p-3 shadow-inner min-h-48 max-h-79 overflow-y-auto">
               {workFlows.map((work) => (
                 <li key={work.id}>
                   <Button
