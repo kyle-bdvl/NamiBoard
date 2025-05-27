@@ -48,23 +48,27 @@ export default function Sidebar({ startWorkFlow, workFlows, onSelectKanban, onLo
       style={{
         boxShadow:
           '6px 0 15px -3px rgba(0, 0, 0, 0.2), 3px 0 8px -4px rgba(0, 0, 0, 0.1)',
-      }}
-    >
+      }}>
+
       {/* Top */}
-      <div className="flex flex-col gap-6">
+      <div className=" flex flex-col gap-6">
         {/* Logo */}
+
         <div 
-          className="bg-white shadow-md rounded-lg p-4 mb-6 flex items-center gap-3 cursor-pointer"
+          className="bg-blue-900 shadow-md rounded-lg p-4 mb-6 flex items-center gap-3 cursor-pointer"
           onDoubleClick={handleLogoDoubleClick}
         >
+
           <img
             src="../src/assets/waveLogo.webp"
             alt="waveLogo"
             className={`w-8 h-8 transition-all ${logoAnimate ? 'animate-wave' : ''}`}
           />
-          <h2 className={`text-2xl font-bold text-blue-900 transition-all ${logoAnimate ? 'animate-wave' : ''}`}>
+
+          <h2 className={`text-2xl font-bold text-white transition-all ${logoAnimate ? 'animate-wave' : ''}`}>
             NamiBoard
           </h2>
+
         </div>
 
         {/* Add Workflow Button */}
@@ -87,7 +91,7 @@ export default function Sidebar({ startWorkFlow, workFlows, onSelectKanban, onLo
           {workFlows.length === 0 ? (
             <p className="text-sm text-gray-500 mt-2">No workflows yet.</p>
           ) : (
-            <ul className="space-y-2 bg-white rounded-lg p-3 shadow-inner">
+            <ul className=" break-all space-y-2 bg-white rounded-lg p-3 shadow-inner">
               {workFlows.map((work) => (
                 <li key={work.id}>
                   <Button
@@ -96,7 +100,7 @@ export default function Sidebar({ startWorkFlow, workFlows, onSelectKanban, onLo
                       onSelectKanban(work.id);
                       navigate('/');
                     }}
-                    className="w-full justify-start bg-white text-gray-800 hover:bg-blue-200"
+                    className="w-full justify-start bg-white rounded-2xl text-gray-800 hover:border-none hover:drop-shadow "
                   >
                     {work.title}
                   </Button>
