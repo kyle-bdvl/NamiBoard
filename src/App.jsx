@@ -19,9 +19,7 @@ function App() {
     setLoggedIn(true);
   };
 
-  if (!loggedIn) {
-    return <LoginPage onLogin={handleLogin} />;
-  }
+
 
   function handleAddColumnToWorkflow(columnData) {
     setProjectsState((prevState) => {
