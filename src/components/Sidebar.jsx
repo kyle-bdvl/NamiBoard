@@ -11,12 +11,15 @@ export default function Sidebar({
   onLogout,
   settingsClicked,
   setSettingsClicked,
-  selectedWorkFlowId 
+  selectedWorkFlowId
 }) {
   const [aboutUsClicked, setAboutUsClicked] = useState(false);
   const [logoAnimate, setLogoAnimate] = useState(false);
-  const [theme, setTheme] = useState({ sidebar: 'bg-blue-200', title: 'bg-blue-900' });
+  const [theme, setTheme] = useState({ sidebar: 'bg-purple-200', title: 'bg-purple-900' });
   const navigate = useNavigate();
+
+  // to be placed in the className for aboutUs, FAQ, and Settings buttons 
+
 
   const handleLogout = () => {
     setAboutUsClicked(false);
@@ -67,6 +70,28 @@ export default function Sidebar({
   const handleThemeChange = (newTheme) => {
     setTheme(newTheme);
   };
+  let hoverClasses = '';
+
+  if (theme.title === 'bg-blue-900') {
+    hoverClasses = 'hover:bg-blue-900 hover:text-white hover:ring-2 hover:ring-blue-900 hover:ring-offset-2';
+  } else if (theme.title === 'bg-green-900') {
+    hoverClasses = 'hover:bg-green-900 hover:text-white hover:ring-2 hover:ring-green-900 hover:ring-offset-2';
+  } else if (theme.title === 'bg-purple-900') {
+    hoverClasses = 'hover:bg-purple-900 hover:text-white hover:ring-2 hover:ring-purple-900 hover:ring-offset-2';
+  } else if (theme.title === 'bg-red-900') {
+    hoverClasses = 'hover:bg-red-900 hover:text-white hover:ring-2 hover:ring-red-900 hover:ring-offset-2';
+  } else if (theme.title === 'bg-yellow-900') {
+    hoverClasses = 'hover:bg-yellow-900 hover:text-white hover:ring-2 hover:ring-yellow-900 hover:ring-offset-2';
+  } else if (theme.title === 'bg-indigo-900') {
+    hoverClasses = 'hover:bg-indigo-900 hover:text-white hover:ring-2 hover:ring-indigo-900 hover:ring-offset-2';
+  } else if (theme.title === 'bg-gray-900') {
+    hoverClasses = 'hover:bg-gray-900 hover:text-white hover:ring-2 hover:ring-gray-900 hover:ring-offset-2';
+  } else {
+    // Fallback classes
+    hoverClasses = 'hover:bg-blue-900 hover:text-white hover:ring-2 hover:ring-blue-900 hover:ring-offset-2';
+  }
+
+  console.log(hoverClasses)
 
   return (
     <aside
@@ -130,11 +155,10 @@ export default function Sidebar({
                       onSelectKanban(work.id);
                       navigate('/');
                     }}
-                    className={`w-full justify-start rounded-2xl hover:border-none hover:drop-shadow ${
-                      work.id === selectedWorkFlowId
+                    className={`w-full justify-start rounded-2xl hover:border-none hover:drop-shadow ${work.id === selectedWorkFlowId
                         ? `${theme.title} text-white`
                         : 'bg-white text-gray-800'
-                    }`}
+                      }`}
                   >
                     {work.title}
                   </Button>
@@ -149,7 +173,7 @@ export default function Sidebar({
       <div className="mt-6 border-t border-gray-300 pt-4 px-4 space-y-2 text-[15px] text-gray-700">
         <button
           onClick={handleAboutUsClick}
-          className="flex items-center gap-3 p-2 rounded-md transition transform hover:scale-105 hover:bg-blue-200 hover:text-blue-800"
+          className={`flex items-center gap-3 p-2 rounded-md transition transform ${hoverClasses}`}
         >
           <img
             src="../src/assets/help-box-outline.svg"
@@ -158,7 +182,9 @@ export default function Sidebar({
           />
           About Us
         </button>
-        <button className="flex items-center gap-3 p-2 rounded-md transition transform hover:scale-105 hover:bg-blue-200 hover:text-blue-800">
+        <button
+          className={`flex items-center gap-3 p-2 rounded-md transition transform ${hoverClasses}`}
+        >
           <img
             src="../src/assets/FAQ.svg"
             className="w-5 h-5"
@@ -168,14 +194,14 @@ export default function Sidebar({
         </button>
         <button
           onClick={handleSettingsClick}
-          className="flex items-center gap-3 p-2 rounded-md transition transform hover:scale-105 hover:bg-blue-200 hover:text-blue-800"
+          className={`flex items-center gap-3 p-2 rounded-md transition transform ${hoverClasses}`}
         >
           <img src="../src/assets/cog.svg" className="w-5 h-5" alt="Settings" />
           Settings
         </button>
         <button
           onClick={handleLogout}
-          className="flex items-center gap-3 p-2 rounded-md transition transform hover:scale-105 hover:bg-red-100 hover:text-red-600"
+          className="flex items-center gap-3 p-2 rounded-md transition transform hover:bg-red-100 hover:text-red-600"
         >
           <img src="../src/assets/logout.svg" className="w-5 h-5" alt="Logout" />
           Logout

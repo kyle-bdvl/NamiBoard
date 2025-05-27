@@ -26,7 +26,7 @@ export default function ThemeSettings({ onThemeChange }) {
           <button
             key={index}
             className={`w-8 h-8 rounded-lg border-2 duration-500 drop-shadow-2xl ${theme.sidebar} ${
-              selectedTheme === theme ? 'border-gray-500' : 'border-transparent'
+              selectedTheme.title === theme.title ? 'border-gray-500' : 'border-transparent'
             }`}
             onClick={() => handleThemeChange(theme)}
           />
