@@ -1,4 +1,3 @@
-import React from 'react';
 
 export default function AboutUs() {
   return (
@@ -44,43 +43,43 @@ export default function AboutUs() {
               href="https://github.com/kyle-bdvl"
               target="_blank"
               rel="noopener noreferrer"
-              className="flex flex-col items-center transition transform hover:scale-105 hover:shadow-lg duration-300"
+              className="w-48 flex flex-col items-center transition transform hover:scale-105 hover:bg-blue-300 hover:text-black hover:shadow-lg duration-300 p-4 rounded-lg"
             >
               <img
                 src="../src/assets/kyle_image.jpg"
                 alt="Group Mate 1"
                 className="w-40 h-40 rounded-full object-cover mb-4 border-4 border-blue-200"
               />
-              <h3 className="text-2xl font-bold text-blue-900">[Kyle Boudville]</h3>
-              <p className="text-lg text-gray-600">Software Engineer</p>
+              <h3 className="text-2xl font-bold">[Kyle Boudville]</h3>
+              <p className="text-lg">Software Engineer</p>
             </a>
             <a
               href="https://github.com/ewingingit"
               target="_blank"
               rel="noopener noreferrer"
-              className="flex flex-col items-center transition transform hover:scale-105 hover:shadow-lg duration-300"
+              className="w-48 flex flex-col items-center transition transform hover:scale-105 hover:bg-blue-300 hover:text-black hover:shadow-lg duration-300 p-4 rounded-lg"
             >
               <img
                 src="../src/assets/ewing-image.jpg"
                 alt="Group Mate 2"
                 className="w-40 h-40 rounded-full object-cover mb-4 border-4 border-blue-200"
               />
-              <h3 className="text-2xl font-bold text-blue-900">[Ewing Ho Gawing]</h3>
-              <p className="text-lg text-gray-600">Software Engineer</p>
+              <h3 className="text-2xl font-bold">[Ewing Ho Gawing]</h3>
+              <p className="text-lg">Software Engineer</p>
             </a>
             <a
               href="https://github.com/AlexNgooi"
               target="_blank"
               rel="noopener noreferrer"
-              className="flex flex-col items-center transition transform hover:scale-105 hover:shadow-lg duration-300"
+              className="w-48 flex flex-col items-center transition transform hover:scale-105 hover:bg-blue-300 hover:text-black hover:shadow-lg duration-300 p-4 rounded-lg"
             >
               <img
                 src="../src/assets/alex-image.jpg"
                 alt="Group Mate 3"
                 className="w-40 h-40 rounded-full object-cover mb-4 border-4 border-blue-200"
               />
-              <h3 className="text-2xl font-bold text-blue-900">[Xue Yang]</h3>
-              <p className="text-lg text-gray-600">Software Engineer</p>
+              <h3 className="text-2xl font-bold">[Xue Yang]</h3>
+              <p className="text-lg">Software Engineer</p>
             </a>
           </div>
         </section>
