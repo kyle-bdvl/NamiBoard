@@ -8,27 +8,27 @@ import NoBoardSelected from './components/NoBoardSelected';
 import LoginPage from './components/LoginPage';
 import SignUp from './components/SignUpPage';
 import AboutUs from './components/AboutUs.jsx';
+import Button from './components/Buttons';
 import './App.css';
 
 function App() {
   const [loggedIn, setLoggedIn] = useState(false);
+  const [SideBar, setHideSideBar] = useState(true);
   const [projectsState, setProjectsState] = useState({
     selectedWorkFlowId: undefined,
     WorkFlow: []
   });
-  const handleLogin = () => {
-    setLoggedIn(true);
-  };
+  const [settingsClicked, setSettingsClicked] = useState(false); // lifted state
   const [userProfile, setUserProfile] = useState({
     firstName: "Molly",
     lastName: "Potter",
     email: "molly@example.com"
-  });
+  });
 
-   function handleSettings() {
-    setProjectsState(prevState => ({ ...prevState, selectedWorkFlowId: null }));
-    navigate('/settings');
-  }
+
+  function handleLogin() {
+    setLoggedIn(true);
+  };
 
 
   function handleAddColumnToWorkflow(columnData) {
@@ -37,8 +37,8 @@ function App() {
         if (workflow.id === prevState.selectedWorkFlowId) {
           return {
             ...workflow,
-            columns: [{ 
-              id: Math.random(), 
+            columns: [{
+              id: Math.random(),
               ...columnData,
               color: columnData.color || 'bg-blue-100' // Add color support
             }, ...workflow.columns]
@@ -245,17 +245,33 @@ function App() {
   return (
     <>
       {loggedIn ? (
-        <main className="h-screen flex">
-          <Sidebar
-            startWorkFlow={handleStartWorkFlow}
-            workFlows={projectsState.WorkFlow}
-            onSelectKanban={handleSelectKanban}
-            onSettings={handleSettings}
-            onLogout={() => setLoggedIn(false)}
-          />
+        <main className="h-screen flex relative">
+          {SideBar ? (
+            <Sidebar
+              startWorkFlow={handleStartWorkFlow}
+              workFlows={projectsState.WorkFlow}
+              onSelectKanban={handleSelectKanban}
+              onSideBarToggle={() => setHideSideBar(!SideBar)}
+              onLogout={() => setLoggedIn(false)}
+              settingsClicked={settingsClicked}
+              setSettingsClicked={setSettingsClicked}
+            />
+          ) : (
+            <Button
+              onClick={() => setHideSideBar(!SideBar)}
+              className="bg-blue-500 px-3 bg-opacity-80 hover:bg-opacity-100 text-white p-2 rounded-md fixed top-4 left-4 z-50 transition-all duration-200"
+              aria-label="Toggle Sidebar"
+            >
+              <img
+                src="../src/assets/chevron-triple-right.svg"
+                alt=""
+                className="w-6 h-6"
+              />
+            </Button>
+          )}
 
-          {/* Main content area */}
-          <div className="flex-1 overflow-auto">
+          {/* Main content area with left margin when sidebar is hidden */}
+          <div className={`flex-1 overflow-auto transition-all duration-200 ${SideBar ? "" : "ml-20"}`}>
             <Routes>
               <Route
                 path="/"
@@ -284,9 +300,18 @@ function App() {
                   )
                 }
               />
-              <Route path="/settings" element={<Settings userProfile={userProfile} setUserProfile={setUserProfile}/>} />
-              <Route path="/AboutUs" element={<AboutUs/>}/>
-              {/* add more routes here if needed */}
+              <Route
+                path="/settings"
+                element={
+                  <Settings
+                    userProfile={userProfile}
+                    setUserProfile={setUserProfile}
+                    settingsClicked={settingsClicked}
+                    setSettingsClicked={setSettingsClicked}
+                  />
+                }
+              />
+              <Route path="/AboutUs" element={<AboutUs />} />
               <Route path="*" element={<Navigate to="/" />} />
             </Routes>
           </div>

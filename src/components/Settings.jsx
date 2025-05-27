@@ -1,11 +1,12 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-export default function Settings({ userProfile, setUserProfile }) {
+export default function Settings({ userProfile, setUserProfile, settingsClicked, setSettingsClicked }) {
   // Local state for form fields
   const [firstName, setFirstName] = useState(userProfile.firstName);
   const [lastName, setLastName] = useState(userProfile.lastName);
   const [email, setEmail] = useState(userProfile.email);
+  
   // Modal state
   const [showModal, setShowModal] = useState(false);
   const navigate = useNavigate();
@@ -16,12 +17,15 @@ export default function Settings({ userProfile, setUserProfile }) {
   };
 
   const handleCancel = () => {
-    // Reset form fields to the current values from userProfile
+    // Reset the settingsClicked state as well on cancel
+    setSettingsClicked(false);
+    // Optionally, reset form fields to userProfile values if desired
     navigate('/'); // Navigate to the main board route
   };
 
   const goToCreateBoard = () => {
     // Close modal and navigate to create Kanban Board page (here assumed as "/")
+    setSettingsClicked(settingsClicked => !settingsClicked);
     setShowModal(false);
     navigate('/');
   };

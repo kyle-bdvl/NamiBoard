@@ -3,8 +3,15 @@ import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import ThemeSettings from './ThemeSettings';
 
-export default function Sidebar({ startWorkFlow, workFlows, onSelectKanban, onSettings, onLogout }) {
-  const [settingsClicked, setSettingsClicked] = useState(false);
+export default function Sidebar({ 
+  startWorkFlow, 
+  workFlows, 
+  onSelectKanban, 
+  onSideBarToggle, 
+  onLogout, 
+  settingsClicked,         // received from App.jsx
+  setSettingsClicked         // received from App.jsx
+}) {
   const [aboutUsClicked, setAboutUsClicked] = useState(false);
   const [logoAnimate, setLogoAnimate] = useState(false);
   const [theme, setTheme] = useState({ sidebar: 'bg-blue-200', title: 'bg-blue-900' });
@@ -165,6 +172,12 @@ export default function Sidebar({ startWorkFlow, workFlows, onSelectKanban, onSe
           Logout
         </button>
         <ThemeSettings onThemeChange={handleThemeChange} />
+        <div className="flex justify-center pb-4">
+          <Button onClick={onSideBarToggle}>
+            <img className="w-8 h-8" src="../src/assets/eye-off.svg" alt="hideSideBar" />
+            Hide SideBar
+          </Button>
+        </div>
 
       </div>
 
