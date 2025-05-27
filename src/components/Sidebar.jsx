@@ -1,7 +1,10 @@
 import Button from './Buttons';
 import { useNavigate } from 'react-router-dom';
+import { useState } from 'react';
 
 export default function Sidebar({ startWorkFlow, workFlows, onSelectKanban }) {
+  const [settingsClicked, setSettingsClicked] = useState(false);
+  const [aboutUsClicked, setAboutUsClicked] = useState(false);
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -12,6 +15,30 @@ export default function Sidebar({ startWorkFlow, workFlows, onSelectKanban }) {
     navigate('/'); // Ensure main board route
     startWorkFlow(); // Then start workflow logic
   };
+
+  const handleSettingsClick = () => {
+    if (settingsClicked) {
+      // If already open, close settings and return to home board
+      setSettingsClicked(false);
+      navigate('/');
+    } else {
+      // Open settings page
+      setSettingsClicked(true);
+      navigate('/settings');
+    }
+  };
+
+  const handleAboutUsClick = () => {
+    if (aboutUsClicked) {
+      // If already open, close About Us and return to home board
+      setAboutUsClicked(false);
+      navigate('/');
+    } else {
+      // Open About Us page
+      setAboutUsClicked(true);
+      navigate('/aboutUs');
+    }
+  }
 
   return (
     <aside
@@ -75,7 +102,10 @@ export default function Sidebar({ startWorkFlow, workFlows, onSelectKanban }) {
 
       {/* Bottom Utility Links */}
       <div className="mt-6 border-t border-gray-300 pt-4 space-y-2 text-[15px] text-gray-700">
-        <button onClick={()=>navigate('/aboutUs')} className="flex items-center gap-3 p-2 rounded-md hover:bg-blue-200 hover:text-blue-800 transition-all">
+        <button
+          onClick={handleAboutUsClick}
+          className="flex items-center gap-3 p-2 rounded-md hover:bg-blue-200 hover:text-blue-800 transition-all"
+        >
           <img
             src="../src/assets/help-box-outline.svg"
             className="w-5 h-5"
@@ -87,11 +117,17 @@ export default function Sidebar({ startWorkFlow, workFlows, onSelectKanban }) {
           <img src="../src/assets/FAQ.svg" className="w-5 h-5" alt="FAQ" />
           FAQ
         </button>
-        <button onClick={() => navigate('/settings')} className="flex items-center gap-3 p-2 rounded-md hover:bg-blue-200 hover:text-blue-800 transition-all">
+        <button
+          onClick={handleSettingsClick}
+          className="flex items-center gap-3 p-2 rounded-md hover:bg-blue-200 hover:text-blue-800 transition-all"
+        >
           <img src="../src/assets/cog.svg" className="w-5 h-5" alt="Settings" />
           Settings
         </button>
-        <button onClick={handleLogout} className="flex items-center gap-3 p-2 rounded-md hover:bg-red-100 hover:text-red-600 transition-all">
+        <button
+          onClick={handleLogout}
+          className="flex items-center gap-3 p-2 rounded-md hover:bg-red-100 hover:text-red-600 transition-all"
+        >
           <img src="../src/assets/logout.svg" className="w-5 h-5" alt="Logout" />
           Logout
         </button>
