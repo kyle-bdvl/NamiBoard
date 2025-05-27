@@ -1,6 +1,6 @@
 export default function NoBoardSelected({ startWorkFlow }) {
   return (
-    <div className=" flex flex-col items-center justify-center p-8 gap-4 bg-white max-w-md mx-auto text-center">
+    <div className=" flex flex-col items-center justify-center p-8 gap-4 bg-slate-100 max-w-md mx-auto text-center">
       <img 
         src="https://cdn-icons-png.flaticon.com/512/565/565547.png" 
         alt="No Project Selected" 

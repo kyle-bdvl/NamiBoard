@@ -9,8 +9,9 @@ export default function Sidebar({
   onSelectKanban,
   onSideBarToggle,
   onLogout,
-  settingsClicked,         // received from App.jsx
-  setSettingsClicked         // received from App.jsx
+  settingsClicked,
+  setSettingsClicked,
+  selectedWorkFlowId 
 }) {
   const [aboutUsClicked, setAboutUsClicked] = useState(false);
   const [logoAnimate, setLogoAnimate] = useState(false);
@@ -35,10 +36,12 @@ export default function Sidebar({
     if (settingsClicked) {
       setAboutUsClicked(false);
       setSettingsClicked(false);
+      onSelectKanban(null);  // clear workflow selection
       navigate('/');
     } else {
       setAboutUsClicked(false);
       setSettingsClicked(true);
+      onSelectKanban(null);  // clear workflow selection
       navigate('/settings');
     }
   };
@@ -47,10 +50,12 @@ export default function Sidebar({
     if (aboutUsClicked) {
       setSettingsClicked(false);
       setAboutUsClicked(false);
+      onSelectKanban(null);  // clear workflow selection
       navigate('/');
     } else {
       setSettingsClicked(false);
       setAboutUsClicked(true);
+      onSelectKanban(null);  // clear workflow selection
       navigate('/aboutUs');
     }
   };
@@ -125,7 +130,11 @@ export default function Sidebar({
                       onSelectKanban(work.id);
                       navigate('/');
                     }}
-                    className="w-full justify-start bg-white rounded-2xl text-gray-800 hover:border-none hover:drop-shadow "
+                    className={`w-full justify-start rounded-2xl hover:border-none hover:drop-shadow ${
+                      work.id === selectedWorkFlowId
+                        ? `${theme.title} text-white`
+                        : 'bg-white text-gray-800'
+                    }`}
                   >
                     {work.title}
                   </Button>

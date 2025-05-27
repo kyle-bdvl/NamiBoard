@@ -245,7 +245,7 @@ function App() {
   return (
     <>
       {loggedIn ? (
-        <main className="h-screen flex relative">
+        <main className="h-screen flex relative bg-slate-100">
           {SideBar ? (
             <Sidebar
               startWorkFlow={handleStartWorkFlow}
@@ -255,23 +255,24 @@ function App() {
               onLogout={() => setLoggedIn(false)}
               settingsClicked={settingsClicked}
               setSettingsClicked={setSettingsClicked}
+              selectedWorkFlowId={projectsState.selectedWorkFlowId} 
             />
           ) : (
             <Button
               onClick={() => setHideSideBar(!SideBar)}
-              className="bg-blue-500 px-3 bg-opacity-80 hover:bg-opacity-100 text-white p-2 rounded-md fixed top-4 left-4 z-50 transition-all duration-200"
+              className="bg-gradient-to-r from-gray-400 to-gray-600 px-3 bg-opacity-80 hover:bg-opacity-100 text-white p-2 rounded-md fixed top-4 left-4 z-50 transition-all duration-400"
               aria-label="Toggle Sidebar"
             >
               <img
                 src="../src/assets/chevron-triple-right.svg"
-                alt=""
+                alt="backButton"
                 className="w-6 h-6"
-              />
+              />  
             </Button>
           )}
 
           {/* Main content area with left margin when sidebar is hidden */}
-          <div className={`flex-1 overflow-auto transition-all duration-200 ${SideBar ? "" : "ml-20"}`}>
+          <div className={`flex-1 overflow-auto transition-[margin] duration-500 ease-in-out ${SideBar ? "ml-0" : "ml-20"}`}>
             <Routes>
               <Route
                 path="/"
