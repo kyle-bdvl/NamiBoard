@@ -15,9 +15,9 @@ export default function Task({ task, columnId, onDelete, onEdit, onAddFile }) {
   };
 
   return (
-    <li className="bg-white p-3 rounded shadow text-sm space-y-2">
+    <li className="bg-white p-3 rounded shadow text-sm space-y-2 ">
       <div className="flex justify-between items-start">
-        <h4 className="font-semibold text-base flex-1">{task.title}</h4>
+        <h4 className="font-semibold text-base flex-1 break-all">{task.title}</h4>
         <button
           className="text-lg px-2"
           onClick={() => setShowTaskModal(true)}

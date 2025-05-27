@@ -52,9 +52,9 @@ export default function Columns({
     <div className="mt-10">
       <ul className="flex flex-row gap-5">
         {columns.map((column) => (
-          <li key={column.id} className="bg-blue-100 p-3 rounded-md w-64">
+          <li key={column.id} className={`${column.color || 'bg-blue-100'} p-3 rounded-md w-64`}>
             <div className="flex justify-between items-center mb-2">
-              <h3 className="text-lg font-bold">{column.title}</h3>
+              <h3 className="text-lg font-bold break-all">{column.title}</h3>
               <button
                 className="text-lg px-2"
                 onClick={() => setShowColumnModal(column.id)}
