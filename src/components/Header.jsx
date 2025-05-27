@@ -1,24 +1,28 @@
-export default function Header({ workFlow }) {
-  const userCircle =
-    "w-12 h-12 bg-blue-200 text-blue-800 rounded-full flex items-center justify-center font-semibold shadow-sm";
-
+export default function Header({ workFlow, userProfile }) {
+  const { firstName, lastName } = userProfile;
+  const initials = `${firstName.charAt(0)}${lastName.charAt(0)}`;
+  
   return (
-    <header className="flex flex-wrap items-center justify-between bg-white px-6 py-4 shadow rounded-md mb-5">
-      {/* Title and Objective Section */}
-      <div className="flex flex-col gap-1">
-        <h1 className="text-xl font-bold text-gray-800">
-          {workFlow.title || "Untitled Board"}
-        </h1>
-        <p className="text-sm text-gray-600 max-w-md">
-          <span className="font-semibold">Objective:</span>{" "}
-          {workFlow.objective || "No objective set."}
-        </p>
+    <header className="flex items-center justify-between mb-6">
+      <div>
+        {workFlow && (
+          <div>
+            <h2 className="text-2xl font-bold">{workFlow.title}</h2>
+            {workFlow.objective && (
+              <p className="mt-1 text-sm text-gray-500">
+                {workFlow.objective}
+              </p>
+            )}
+          </div>
+        )}
       </div>
-
-      {/* User Profile */}
-      <div className="flex items-center gap-4">
-        <div className={userCircle}>MP</div>
-        <span className="text-sm text-gray-700">Molly Potter</span>
+      <div className="flex items-center space-x-3">
+        <div className="w-10 h-10 bg-blue-600 text-white rounded-full flex items-center justify-center font-semibold">
+          {initials}
+        </div>
+        <div className="text-gray-800">
+          {firstName} {lastName}
+        </div>
       </div>
     </header>
   );

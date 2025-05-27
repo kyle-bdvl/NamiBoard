@@ -1,11 +1,13 @@
 import { useState } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
+import Settings from './components/Settings';
 import CreateKanbanBoard from './components/createKanbanBoard.jsx';
 import Sidebar from './components/Sidebar';
 import SelectedKanbanBoard from './components/SelectedKanbanBoard';
 import NoBoardSelected from './components/NoBoardSelected';
 import LoginPage from './components/LoginPage';
 import SignUp from './components/SignUpPage';
+import AboutUs from './components/AboutUs.jsx';
 import './App.css';
 
 function App() {
@@ -15,10 +17,20 @@ function App() {
     WorkFlow: []
   });
 
+  const [userProfile, setUserProfile] = useState({
+    firstName: "Molly",
+    lastName: "Potter",
+    email: "molly@example.com"
+  });
+
   const handleLogin = () => {
     setLoggedIn(true);
   };
 
+   function handleSettings() {
+    setProjectsState(prevState => ({ ...prevState, selectedWorkFlowId: null }));
+    navigate('/settings');
+  }
 
 
   function handleAddColumnToWorkflow(columnData) {
@@ -218,48 +230,60 @@ function App() {
 
   return (
     <>
-      <Routes>
-        <Route
-          path="/"
-          element={
-            loggedIn ? (
-              <main className="h-screen flex ">
-                <Sidebar
-                  startWorkFlow={handleStartWorkFlow}
-                  workFlows={projectsState.WorkFlow}
-                  onSelectKanban={handleSelectKanban}
-                />
-                {projectsState.selectedWorkFlowId === null ? (
-                  <CreateKanbanBoard
-                    onAdd={handleAddWorkFlow}
-                    onCancel={handleCancelWorkFlow}
-                  />
-                ) : projectsState.selectedWorkFlowId === undefined ? (
-                  <NoBoardSelected startWorkFlow={handleStartWorkFlow} />
-                ) : (
-                  <SelectedKanbanBoard
-                    workFlow={projectsState.WorkFlow.find(
-                      workflow => workflow.id === projectsState.selectedWorkFlowId
-                    )}
-                    onAddColumn={handleAddColumnToWorkflow}
-                    onAddTask={handleAddTaskToColumn}
-                    onDeleteColumn={handleDeleteColumn}
-                    onEditColumn={handleEditColumn}
-                    onDeleteTask={handleDeleteTask}
-                    onEditTask={handleEditTask}
-                    onAddTaskFile={handleAddTaskFile}
-                  />
-                )}
-              </main>
-            ) : (
-              <Navigate to="/Login" />
-            )
-          }
-        />
-        <Route path="/Login" element={<LoginPage onLogin={handleLogin} />} />
-        <Route path="/SignUp" element={<SignUp />} />
-        <Route path="*" element={<Navigate to="/" />} />
-      </Routes>
+      {loggedIn ? (
+        <main className="h-screen flex">
+          <Sidebar
+            startWorkFlow={handleStartWorkFlow}
+            workFlows={projectsState.WorkFlow}
+            onSelectKanban={handleSelectKanban}
+            onSettings={handleSettings}
+            onLogout={() => setLoggedIn(false)}
+          />
+
+          {/* Main content area */}
+          <div className="flex-1 overflow-auto">
+            <Routes>
+              <Route
+                path="/"
+                element={
+                  projectsState.selectedWorkFlowId === null ? (
+                    <CreateKanbanBoard
+                      onAdd={handleAddWorkFlow}
+                      onCancel={handleCancelWorkFlow}
+                    />
+                  ) : projectsState.selectedWorkFlowId === undefined ? (
+                    <NoBoardSelected startWorkFlow={handleStartWorkFlow} />
+                  ) : (
+                    <SelectedKanbanBoard
+                      workFlow={projectsState.WorkFlow.find(
+                        workflow => workflow.id === projectsState.selectedWorkFlowId
+                      )}
+                      onAddColumn={handleAddColumnToWorkflow}
+                      onAddTask={handleAddTaskToColumn}
+                      onDeleteColumn={handleDeleteColumn}
+                      onEditColumn={handleEditColumn}
+                      onDeleteTask={handleDeleteTask}
+                      onEditTask={handleEditTask}
+                      onAddTaskFile={handleAddTaskFile}
+                      userProfile={userProfile}
+                    />
+                  )
+                }
+              />
+              <Route path="/settings" element={<Settings userProfile={userProfile} setUserProfile={setUserProfile}/>} />
+              <Route path="/AboutUs" element={<AboutUs/>}/>
+              {/* add more routes here if needed */}
+              <Route path="*" element={<Navigate to="/" />} />
+            </Routes>
+          </div>
+        </main>
+      ) : (
+        <Routes>
+          <Route path="/login" element={<LoginPage onLogin={handleLogin} />} />
+          <Route path="/signup" element={<SignUp />} />
+          <Route path="*" element={<Navigate to="/login" />} />
+        </Routes>
+      )}
     </>
   );
 }
