@@ -11,7 +11,7 @@ export default function AboutUs() {
         backgroundAttachment: "fixed",
       }}
     >
-      <div className="max-w-5xl mx-auto text-center bg-white bg-opacity-80 rounded-lg p-8">
+      <div className="max-w-5xl mx-auto text-center">
         <h1 className="text-5xl font-bold mb-4 text-blue-900">
           About NamiBoard
         </h1>
@@ -20,7 +20,8 @@ export default function AboutUs() {
           Organize your tasks, plan your studies, and boost your productivity with ease.
         </p>
 
-        <section className="mb-12">
+        {/* Our Story Section with alternate background */}
+        <section className="mb-12 p-6 bg-blue-50 rounded-lg shadow">
           <h2 className="text-3xl font-semibold mb-6 text-blue-800">
             Our Story
           </h2>
@@ -35,10 +36,16 @@ export default function AboutUs() {
           </p>
         </section>
 
-        <section className="mb-12">
+        {/* Meet the Team Section with alternate background */}
+        <section className="mb-12 p-6 bg-blue-100 rounded-lg shadow">
           <h2 className="text-3xl font-semibold mb-6 text-blue-800">Meet the Team</h2>
           <div className="flex flex-col sm:flex-row items-center justify-around gap-8">
-            <div className="flex flex-col items-center transition transform hover:scale-105 hover:shadow-lg duration-300">
+            <a
+              href="https://github.com/kyle-bdvl"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex flex-col items-center transition transform hover:scale-105 hover:shadow-lg duration-300"
+            >
               <img
                 src="../src/assets/kyle_image.jpg"
                 alt="Group Mate 1"
@@ -46,29 +53,40 @@ export default function AboutUs() {
               />
               <h3 className="text-2xl font-bold text-blue-900">[Kyle Boudville]</h3>
               <p className="text-lg text-gray-600">Software Engineer</p>
-            </div>
-            <div className="flex flex-col items-center transition transform hover:scale-105 hover:shadow-lg duration-300">
+            </a>
+            <a
+              href="https://github.com/ewingingit"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex flex-col items-center transition transform hover:scale-105 hover:shadow-lg duration-300"
+            >
               <img
-                src="../src/assets/.jpg"
+                src="../src/assets/ewing-image.jpg"
                 alt="Group Mate 2"
                 className="w-40 h-40 rounded-full object-cover mb-4 border-4 border-blue-200"
               />
               <h3 className="text-2xl font-bold text-blue-900">[Ewing Ho Gawing]</h3>
               <p className="text-lg text-gray-600">Software Engineer</p>
-            </div>
-            <div className="flex flex-col items-center transition transform hover:scale-105 hover:shadow-lg duration-300">
+            </a>
+            <a
+              href="https://github.com/AlexNgooi"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex flex-col items-center transition transform hover:scale-105 hover:shadow-lg duration-300"
+            >
               <img
-                src="path_to_image3.jpg"
+                src="../src/assets/alex-image.jpg"
                 alt="Group Mate 3"
                 className="w-40 h-40 rounded-full object-cover mb-4 border-4 border-blue-200"
               />
               <h3 className="text-2xl font-bold text-blue-900">[Xue Yang]</h3>
               <p className="text-lg text-gray-600">Software Engineer</p>
-            </div>
+            </a>
           </div>
         </section>
 
-        <section className="mb-12">
+        {/* Future Plans Section with alternate background */}
+        <section className="mb-12 p-6 bg-blue-50 rounded-lg shadow">
           <h2 className="text-3xl font-semibold mb-4 text-blue-800">Future Plans</h2>
           <p className="text-lg text-gray-700">
             {/* Insert future plans here */}
@@ -77,7 +95,8 @@ export default function AboutUs() {
           </p>
         </section>
 
-        <section className="mb-12">
+        {/* Contact Us Section with alternate background */}
+        <section className="mb-12 p-6 bg-blue-100 rounded-lg shadow">
           <h2 className="text-3xl font-semibold mb-4 text-blue-800">Contact Us</h2>
           <p className="text-lg text-blue-700">
             {/* Insert contact info here */}

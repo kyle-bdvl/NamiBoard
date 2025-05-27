@@ -2,13 +2,14 @@ import Button from './Buttons';
 import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 
-export default function Sidebar({ startWorkFlow, workFlows, onSelectKanban }) {
+export default function Sidebar({ startWorkFlow, workFlows, onSelectKanban ,onLogout}) {
   const [settingsClicked, setSettingsClicked] = useState(false);
   const [aboutUsClicked, setAboutUsClicked] = useState(false);
   const navigate = useNavigate();
 
   const handleLogout = () => {
-    navigate('/Login');
+    onLogout(); // Call the logout function passed from App.jsx
+    navigate('/login');
   };
 
   const handleAddWorkflow = () => {
@@ -38,7 +39,7 @@ export default function Sidebar({ startWorkFlow, workFlows, onSelectKanban }) {
       setAboutUsClicked(true);
       navigate('/aboutUs');
     }
-  }
+  };
 
   return (
     <aside
@@ -51,13 +52,13 @@ export default function Sidebar({ startWorkFlow, workFlows, onSelectKanban }) {
       {/* Top */}
       <div className="flex flex-col gap-6">
         {/* Logo */}
-        <div className="flex items-center gap-2 p-4 rounded-md text-black">
+        <div className="bg-white shadow-md rounded-lg p-4 mb-6 flex items-center gap-3">
           <img
             src="../src/assets/waveLogo.webp"
             alt="waveLogo"
-            className="w-7 h-7"
+            className="w-8 h-8"
           />
-          <h2 className="text-2xl font-bold">NamiBoard</h2>
+          <h2 className="text-2xl font-bold text-blue-900">NamiBoard</h2>
         </div>
 
         {/* Add Workflow Button */}
