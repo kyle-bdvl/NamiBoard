@@ -8,7 +8,10 @@ export default function SelectedKanbanBoard({
   onAddColumn,
   onAddTask,
   onDeleteColumn,
+  onEditColumn,      // Add these props
   onDeleteTask,
+  onEditTask,        // Add these props
+  onAddTaskFile,
   userProfile
 }) {
   const [showColumn, setShowColumn] = useState(false);
@@ -47,7 +50,10 @@ export default function SelectedKanbanBoard({
             columns={workFlow.columns}
             onAddTask={onAddTask}
             onDeleteColumn={onDeleteColumn}
+            onEditColumn={onEditColumn}      // Add these props
             onDeleteTask={onDeleteTask}
+            onEditTask={onEditTask}          // Add these props
+            onAddTaskFile={onAddTaskFile}
           />
         </div>
       ) : (

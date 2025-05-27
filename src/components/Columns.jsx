@@ -68,8 +68,9 @@ export default function Columns({
                 <Task
                   key={task.id}
                   task={task}
+                  columnId={column.id}           // Add this prop
                   onDelete={() => onDeleteTask(column.id, task.id)}
-                  onEdit={() => handleEditTaskOpen(column.id, task)}
+                  onEdit={(title, description) => onEditTask(column.id, task.id, title, description)}
                   onAddFile={(file) => onAddTaskFile(column.id, task.id, file)}
                 />
               ))}
@@ -105,7 +106,7 @@ export default function Columns({
                 <form
                   onSubmit={e => {
                     e.preventDefault();
-                    onEditColumn(column.id, colTitle, colDesc);
+                    onEditColumn(editColumn.id, colTitle, colDesc);
                     setShowColumnModal(null);
                     setEditColumn(null);
                   }}
