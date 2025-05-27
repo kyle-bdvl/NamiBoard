@@ -11,20 +11,26 @@ export default function Sidebar({ startWorkFlow, workFlows, onSelectKanban, onSe
   const navigate = useNavigate();
 
   const handleLogout = () => {
+    setAboutUsClicked(false);
+    setSettingsClicked(false);
     onLogout();
     navigate('/login');
   };
 
   const handleAddWorkflow = () => {
+    setAboutUsClicked(false);
+    setSettingsClicked(false);
     navigate('/');
     startWorkFlow();
   };
 
   const handleSettingsClick = () => {
     if (settingsClicked) {
+      setAboutUsClicked(false);
       setSettingsClicked(false);
       navigate('/');
     } else {
+      setAboutUsClicked(false);
       setSettingsClicked(true);
       navigate('/settings');
     }
@@ -32,9 +38,11 @@ export default function Sidebar({ startWorkFlow, workFlows, onSelectKanban, onSe
 
   const handleAboutUsClick = () => {
     if (aboutUsClicked) {
+      setSettingsClicked(false);
       setAboutUsClicked(false);
       navigate('/');
     } else {
+      setSettingsClicked(false);
       setAboutUsClicked(true);
       navigate('/aboutUs');
     }
@@ -61,7 +69,9 @@ export default function Sidebar({ startWorkFlow, workFlows, onSelectKanban, onSe
         {/* Logo */}
 
         <div
+
           className="bg-blue-900 shadow-md rounded-lg p-4 flex items-center gap-3 cursor-pointer"
+
           onDoubleClick={handleLogoDoubleClick}
         >
 
@@ -103,6 +113,8 @@ export default function Sidebar({ startWorkFlow, workFlows, onSelectKanban, onSe
                   <Button
                     row={true}
                     onClick={() => {
+                      setAboutUsClicked(false);
+                      setSettingsClicked(false);
                       onSelectKanban(work.id);
                       navigate('/');
                     }}
