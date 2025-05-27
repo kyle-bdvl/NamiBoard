@@ -37,7 +37,11 @@ function App() {
         if (workflow.id === prevState.selectedWorkFlowId) {
           return {
             ...workflow,
-            columns: [{ id: Math.random(), ...columnData }, ...workflow.columns]
+            columns: [{ 
+              id: Math.random(), 
+              ...columnData,
+              color: columnData.color || 'bg-blue-100' // Add color support
+            }, ...workflow.columns]
           };
         }
         return workflow;

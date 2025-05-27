@@ -1,11 +1,13 @@
 import Button from './Buttons';
 import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
+import ThemeSettings from './ThemeSettings';
 
-export default function Sidebar({ startWorkFlow, workFlows, onSelectKanban, onLogout }) {
+export default function Sidebar({ startWorkFlow, workFlows, onSelectKanban, onSettings, onLogout }) {
   const [settingsClicked, setSettingsClicked] = useState(false);
   const [aboutUsClicked, setAboutUsClicked] = useState(false);
   const [logoAnimate, setLogoAnimate] = useState(false);
+  const [theme, setTheme] = useState({ sidebar: 'bg-blue-200', title: 'bg-blue-900' });
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -42,20 +44,24 @@ export default function Sidebar({ startWorkFlow, workFlows, onSelectKanban, onLo
     setLogoAnimate(prev => !prev);
   };
 
+  const handleThemeChange = (newTheme) => {
+    setTheme(newTheme);
+  };
+
   return (
     <aside
-      className="w-[260px] bg-blue-100 p-6 border-r border-gray-300 flex flex-col justify-between h-screen"
+      className={`w-72 ${theme.sidebar} duration-500 flex flex-col justify-between`}
       style={{
         boxShadow:
           '6px 0 15px -3px rgba(0, 0, 0, 0.2), 3px 0 8px -4px rgba(0, 0, 0, 0.1)',
       }}>
 
       {/* Top */}
-      <div className=" flex flex-col gap-6">
+      <div className=" px-4 pt-4 flex flex-col gap-6 m-0">
         {/* Logo */}
 
-        <div 
-          className="bg-blue-900 shadow-md rounded-lg p-4 mb-6 flex items-center gap-3 cursor-pointer"
+        <div
+          className="bg-blue-900 shadow-md rounded-lg p-4 flex items-center gap-3 cursor-pointer"
           onDoubleClick={handleLogoDoubleClick}
         >
 
@@ -72,7 +78,7 @@ export default function Sidebar({ startWorkFlow, workFlows, onSelectKanban, onLo
         </div>
 
         {/* Add Workflow Button */}
-        <div>
+        <div className="flex flex-row justify-center">
           <Button row={true} onClick={handleAddWorkflow}>
             Add WorkFlow
             <img
@@ -112,7 +118,7 @@ export default function Sidebar({ startWorkFlow, workFlows, onSelectKanban, onLo
       </div>
 
       {/* Bottom Utility Links */}
-      <div className="mt-6 border-t border-gray-300 pt-4 space-y-2 text-[15px] text-gray-700">
+      <div className="mt-6 border-t border-gray-300 pt-4 px-4 space-y-2 text-[15px] text-gray-700">
         <button
           onClick={handleAboutUsClick}
           className="flex items-center gap-3 p-2 rounded-md transition transform hover:scale-105 hover:bg-blue-200 hover:text-blue-800"
@@ -146,7 +152,10 @@ export default function Sidebar({ startWorkFlow, workFlows, onSelectKanban, onLo
           <img src="../src/assets/logout.svg" className="w-5 h-5" alt="Logout" />
           Logout
         </button>
+        <ThemeSettings onThemeChange={handleThemeChange} />
+
       </div>
+
     </aside>
   );
 }
