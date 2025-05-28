@@ -12,7 +12,7 @@ const COLUMN_COLORS = [
   'bg-gray-100',
 ];
 
-export default function CreateColumn({ onAdd, done }) {
+export default function CreateColumn({ onAdd, done,theme }) {
   const columnTitle = useRef();
   const [selectedColor, setSelectedColor] = useState(COLUMN_COLORS[0]);
 
@@ -28,7 +28,7 @@ export default function CreateColumn({ onAdd, done }) {
 
   return (
     <div className="w-full max-w-sm p-4 bg-white rounded-md shadow-md">
-      <Input label={"Column Name"} ref={columnTitle} />
+      <Input theme={theme} label={"Column Name"} ref={columnTitle} />
       
       <div className="mb-4">
         <label className="block text-sm font-medium text-gray-700 mb-2">

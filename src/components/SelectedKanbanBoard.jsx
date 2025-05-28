@@ -53,12 +53,11 @@ export default function SelectedKanbanBoard({
       {/* Add Column Section */}
       <div className="mb-6">
         {showColumn ? (
-          <CreateColumn onAdd={handleCreateColumn} done={handleShowCreateColumn} />
+          <CreateColumn onAdd={handleCreateColumn} done={handleShowCreateColumn} theme={theme} />
         ) : (
           <button
             onClick={handleShowCreateColumn}
-            className={`px-4 py-2 ${theme.sidebar}  text-black rounded-lg  hover:text-white ${hoverClasses} shadow-sm transition duration-200`}
-          >
+            className={`px-4 py-2 ${theme.sidebar}  text-black rounded-lg  hover:text-white ${hoverClasses} shadow-sm transition duration-200`}>
             + Create Column
           </button>
         )}
