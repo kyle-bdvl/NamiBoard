@@ -151,7 +151,7 @@ export default function Sidebar({
 
         {/* Add Workflow Button */}
         <div className="flex flex-row justify-center">
-          <Button row={true} onClick={handleAddWorkflow} className={`${theme.title}`}>
+          <Button row={true} onClick={handleAddWorkflow} className={`${theme.sidebar} ${hoverClasses}`}>
             Add WorkFlow
             <img
               className="w-4 h-4 ml-2"
@@ -216,7 +216,7 @@ export default function Sidebar({
         </button>
         <ThemeSettings theme={theme} onThemeChange={handleThemeChange} />
         <div className="flex justify-center pb-4">
-          <Button className={`${theme.title}`} onClick={onSideBarToggle} >
+          <Button className={`${theme.sidebar} ${hoverClasses}`} onClick={onSideBarToggle} >
             <img className="Icons w-8 h-8" src="../src/assets/eye-off.svg" alt="hideSideBar" />
             Hide SideBar
           </Button>

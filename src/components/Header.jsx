@@ -1,7 +1,7 @@
 export default function Header({ workFlow, userProfile, theme }) {
   const { firstName, lastName } = userProfile;
   const initials = `${firstName.charAt(0)}${lastName.charAt(0)}`;
-
+  //fopr
   let gradientClass = "";
   if (theme.title === "bg-blue-900") {
     gradientClass = "bg-gradient-to-br from-blue-100 to-blue-50";
@@ -20,7 +20,7 @@ export default function Header({ workFlow, userProfile, theme }) {
   } else {
     gradientClass = "bg-gradient-to-br from-blue-100 to-blue-50";
   }
-
+  console.log(theme.title)
   return (
     <header
       className={`flex items-center justify-between mb-6 p-4 rounded-lg shadow-lg ${gradientClass}`}
@@ -30,7 +30,7 @@ export default function Header({ workFlow, userProfile, theme }) {
           <div className="flex flex-col items-start">
             <h2 className="text-2xl mb-3 font-bold flex flex-row items-center gap-4 text-blue-900">
               {workFlow.title} 
-              <img className="w-5 h-5" src="../src/assets/pencil-outline.svg" alt="pencil" />
+              
             </h2>
             {workFlow.objective && (
               <p className="mt-1 text-sm text-gray-500 flex flex-row items-center gap-2">
@@ -48,7 +48,7 @@ export default function Header({ workFlow, userProfile, theme }) {
         )}
       </div>
       <div className="flex items-center space-x-3">
-        <div className="w-12 h-12 bg-blue-600 text-white rounded-full flex items-center justify-center font-semibold text-xl shadow-md">
+        <div className={`${theme.title} w-12 h-12  text-white rounded-full flex items-center justify-center font-semibold text-xl shadow-md`}>
           {initials}
         </div>
         <div className="text-gray-800 font-medium text-lg">
