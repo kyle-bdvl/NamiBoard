@@ -7,7 +7,7 @@ export default function Header({ workFlow, userProfile }) {
       <div>
         {workFlow && (
           <div className="flex flex-col items-start">
-            <h2 className="text-2xl font-bold text-blue-900">{workFlow.title}</h2>
+            <h2 className="text-2xl font-bold text-blue-900 mb-2 ">{workFlow.title}</h2>
             {workFlow.objective && (
               <p className="mt-1 text-sm text-gray-500 flex flex-row items-center gap-2">
                 <img className="w-6 h-6" src="../src/assets/objective.svg" alt="target-objective" />
@@ -16,7 +16,6 @@ export default function Header({ workFlow, userProfile }) {
             )}
             <div className="mt-2 flex flex-col items-center space-x-4 text-sm text-gray-600">
             <p className="mt-1 text-sm text-gray-500 flex flex-row items-center gap-2"><img className="w-6 h-6" src="../src/assets/calendar-range.svg" alt="calendar" /> <strong>Due Date : </strong> {workFlow.dueDate}</p>
-            
             </div>
           </div>
         )}
