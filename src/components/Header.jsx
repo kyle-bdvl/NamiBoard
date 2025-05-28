@@ -28,7 +28,7 @@ export default function Header({ workFlow, userProfile, theme }) {
       <div>
         {workFlow && (
           <div className="flex flex-col items-start">
-            <h2 className="text-2xl mb-3 font-bold flex flex-row items-center gap-4 text-blue-900">
+            <h2 className="text-2xl mb-3 font-bold flex flex-row items-center gap-4 text-black">
               {workFlow.title} 
               
             </h2>
