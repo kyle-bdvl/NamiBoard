@@ -1,8 +1,8 @@
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,100..900;1,100..900&family=Open+Sans:ital,wght@0,300..800;1,300..800&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap');
 @import "tailwindcss";
 
-*{
-  font-family: ''Noto Sans', sans-serif';
+* {
+  font-family: '' Noto Sans', sans-serif';
   font-weight: 400;
 }
 
@@ -56,9 +56,70 @@
 .CustomScrollbar::-webkit-scrollbar-thumb {
   background-color: rgba(0, 0, 0, 0);
   border-radius: 4px;
-  transition: background-color 3s ease-in-out;
+  transition: background-color 0.3s ease-in-out;
 }
 
-.CustomScrollbar::-webkit-scrollbar-thumb:hover {
+.CustomScrollbar.scrolling::-webkit-scrollbar-thumb {
   background-color: #9b9999;
+}
+
+.workflow-hover {
+  position: relative;
+  display: inline-block;
+  overflow: hidden;
+  width: 100%;
+}
+
+.workflow-hover span {
+  position: relative;
+  display: inline-block;
+  transition: color 0.3s ease-in-out;
+}
+
+.workflow-hover::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  transform: translateX(-103%);
+  transition: transform 0.4s ease-in-out;
+}
+
+/* Theme specific colors */
+.workflow-hover.blue::before {
+  background-color: rgb(30 58 138);
+}
+
+.workflow-hover.green::before {
+  background-color: rgb(20 83 45);
+}
+
+.workflow-hover.purple::before {
+  background-color: rgb(88 28 135);
+}
+
+.workflow-hover.red::before {
+  background-color: rgb(127 29 29);
+}
+
+.workflow-hover.yellow::before {
+  background-color: rgb(120 53 15);
+}
+
+.workflow-hover.indigo::before {
+  background-color: rgb(49 46 129);
+}
+
+.workflow-hover.gray::before {
+  background-color: rgb(17 24 39);
+}
+
+.workflow-hover:hover::before {
+  transform: translateX(0);
+}
+
+.workflow-hover:hover span {
+  color: white;
 }

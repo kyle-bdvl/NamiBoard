@@ -1,6 +1,6 @@
 import Button from './Buttons';
 import { useNavigate } from 'react-router-dom';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import ThemeSettings from './ThemeSettings';
 
 export default function Sidebar({
@@ -16,6 +16,7 @@ export default function Sidebar({
   const [aboutUsClicked, setAboutUsClicked] = useState(false);
   const [logoAnimate, setLogoAnimate] = useState(false);
   const [theme, setTheme] = useState({ sidebar: 'bg-purple-200', title: 'bg-purple-900' });
+  let scrollTimeout = null;
   const navigate = useNavigate();
 
   // to be placed in the className for aboutUs, FAQ, and Settings buttons 
@@ -73,25 +74,72 @@ export default function Sidebar({
   let hoverClasses = '';
 
   if (theme.title === 'bg-blue-900') {
-    hoverClasses = 'hover:bg-blue-900 hover:text-white hover:ring-2 hover:ring-blue-900 hover:ring-offset-2';
+    hoverClasses = 'hover:bg-blue-700 hover:text-white hover:ring-2 hover:ring-blue-900 hover:ring-offset-2';
   } else if (theme.title === 'bg-green-900') {
-    hoverClasses = 'hover:bg-green-900 hover:text-white hover:ring-2 hover:ring-green-900 hover:ring-offset-2';
+    hoverClasses = 'hover:bg-green-700 hover:text-white hover:ring-2 hover:ring-green-900 hover:ring-offset-2';
   } else if (theme.title === 'bg-purple-900') {
-    hoverClasses = 'hover:bg-purple-900 hover:text-white hover:ring-2 hover:ring-purple-900 hover:ring-offset-2';
+    hoverClasses = 'hover:bg-purple-700 hover:text-white hover:ring-2 hover:ring-purple-900 hover:ring-offset-2';
   } else if (theme.title === 'bg-red-900') {
-    hoverClasses = 'hover:bg-red-900 hover:text-white hover:ring-2 hover:ring-red-900 hover:ring-offset-2';
+    hoverClasses = 'hover:bg-red-700 hover:text-white hover:ring-2 hover:ring-red-900 hover:ring-offset-2';
   } else if (theme.title === 'bg-yellow-900') {
-    hoverClasses = 'hover:bg-yellow-900 hover:text-white hover:ring-2 hover:ring-yellow-900 hover:ring-offset-2';
+    hoverClasses = 'hover:bg-yellow-700 hover:text-white hover:ring-2 hover:ring-yellow-900 hover:ring-offset-2';
   } else if (theme.title === 'bg-indigo-900') {
-    hoverClasses = 'hover:bg-indigo-900 hover:text-white hover:ring-2 hover:ring-indigo-900 hover:ring-offset-2';
+    hoverClasses = 'hover:bg-indigo-700 hover:text-white hover:ring-2 hover:ring-indigo-900 hover:ring-offset-2';
   } else if (theme.title === 'bg-gray-900') {
-    hoverClasses = 'hover:bg-gray-900 hover:text-white hover:ring-2 hover:ring-gray-900 hover:ring-offset-2';
+    hoverClasses = 'hover:bg-gray-700 hover:text-white hover:ring-2 hover:ring-gray-900 hover:ring-offset-2';
   } else {
     // Fallback classes
-    hoverClasses = 'hover:bg-blue-900 hover:text-white hover:ring-2 hover:ring-blue-900 hover:ring-offset-2';
+    hoverClasses = 'hover:bg-blue-700 hover:text-white hover:ring-2 hover:ring-blue-900 hover:ring-offset-2';
   }
 
   console.log(hoverClasses)
+
+  // Add this helper function at the top of your component
+  const getThemeColor = (theme) => {
+    const colorMap = {
+      'bg-blue-900': 'blue',
+      'bg-green-900': 'green',
+      'bg-purple-900': 'purple',
+      'bg-red-900': 'red',
+      'bg-yellow-900': 'yellow',
+      'bg-indigo-900': 'indigo',
+      'bg-gray-900': 'gray'
+    };
+    return colorMap[theme] || 'blue';
+  };
+
+  useEffect(() => {
+    const handleScroll = (e) => {
+      const element = e.target;
+      element.classList.add('scrolling');
+      
+      // Clear the previous timeout
+      if (scrollTimeout) {
+        clearTimeout(scrollTimeout);
+      }
+
+      // Set new timeout
+      scrollTimeout = setTimeout(() => {
+        element.classList.remove('scrolling');
+      }, 1000);
+    };
+
+    // Add event listeners to all CustomScrollbar elements
+    const scrollableElements = document.querySelectorAll('.CustomScrollbar');
+    scrollableElements.forEach(element => {
+      element.addEventListener('scroll', handleScroll);
+    });
+
+    // Cleanup
+    return () => {
+      if (scrollTimeout) {
+        clearTimeout(scrollTimeout);
+      }
+      scrollableElements.forEach(element => {
+        element.removeEventListener('scroll', handleScroll);
+      });
+    };
+  }, []);
 
   return (
     <aside
@@ -138,30 +186,31 @@ export default function Sidebar({
 
         {/* Workflow List */}
         <div>
-          <h3 className="text-lg font-semibold text-gray-700 mb-2">
+          <h3 className="text-lg font-bold text-gray-700 mb-2">
             Your Workflows
           </h3>
           {workFlows.length === 0 ? (
             <p className="text-sm text-gray-500 mt-2">No workflows yet.</p>
           ) : (
-            <ul className="break-all space-y-2 bg-white rounded-lg p-3 shadow-inner min-h-48 max-h-79 overflow-y-auto">
+            <ul className="CustomScrollbar rounded-sm max-h-79 overflow-y-auto">
               {workFlows.map((work) => (
-                <li key={work.id}>
-                  <Button
-                    row={true}
+                <li key={work.id} className="w-full">
+                  <button
                     onClick={() => {
                       setAboutUsClicked(false);
                       setSettingsClicked(false);
                       onSelectKanban(work.id);
                       navigate('/');
                     }}
-                    className={`w-full justify-start rounded-2xl hover:border-none hover:drop-shadow ${work.id === selectedWorkFlowId
+                    className={`w-full my-0.5 rounded-2xl text-left transition-colors h-12 duration-300 ${
+                      work.id === selectedWorkFlowId
                         ? `${theme.title} text-white`
-                        : 'bg-white text-gray-800'
-                      }`}
-                  >
-                    {work.title}
-                  </Button>
+                        : `workflow-hover ${getThemeColor(theme.title)}`
+                    }`}>
+                    <span className="block w-full px-4 ">
+                      {work.title}
+                    </span>
+                  </button>
                 </li>
               ))}
             </ul>
@@ -170,7 +219,7 @@ export default function Sidebar({
       </div>
 
       {/* Bottom Utility Links */}
-      <div className="mt-6 border-t border-gray-300 pt-4 px-4 space-y-2 text-[15px] text-gray-700">
+      <div className="mt-10 border-t border-gray-300 pt-4 px-4 space-y-2 text-[15px] text-gray-700">
         <button
           onClick={handleAboutUsClick}
           className={`flex items-center gap-3 p-2 rounded-md transition transform ${hoverClasses}`}
