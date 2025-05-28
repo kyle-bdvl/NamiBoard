@@ -2,7 +2,6 @@ import Button from './Buttons';
 import { useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import ThemeSettings from './ThemeSettings';
-import Modal from './Modal';
 
 export default function Sidebar({
   startWorkFlow,
@@ -14,19 +13,12 @@ export default function Sidebar({
   setSettingsClicked,
   selectedWorkFlowId,
   theme,          // lifted from App.jsx
-  setTheme,        // lifted from App.jsx
-  onEditWorkflow,    // Add these props
-  onDeleteWorkflow   // Add these props
+  setTheme        // lifted from App.jsx
 }) {
   const [aboutUsClicked, setAboutUsClicked] = useState(false);
   const [logoAnimate, setLogoAnimate] = useState(false);
   let scrollTimeout = null;
   const navigate = useNavigate();
-
-  const [showWorkflowModal, setShowWorkflowModal] = useState(null);
-  const [editingWorkflow, setEditingWorkflow] = useState(null);
-  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
-  const [newWorkflowTitle, setNewWorkflowTitle] = useState("");
 
   const handleLogout = () => {
     setAboutUsClicked(false);
@@ -134,34 +126,6 @@ export default function Sidebar({
     };
   }, []);
 
-  const handleWorkflowOptions = (workflow) => {
-    setShowWorkflowModal(workflow.id);
-  };
-
-  const handleEditWorkflow = (workflow) => {
-    setEditingWorkflow(workflow);
-    setNewWorkflowTitle(workflow.title);
-    setShowWorkflowModal(workflow.id);
-  };
-
-  const handleDeleteWorkflow = () => {
-    if (editingWorkflow) {
-      onDeleteWorkflow(editingWorkflow.id); // Use the prop function
-      setShowDeleteConfirm(false);
-      setShowWorkflowModal(null);
-      setEditingWorkflow(null);
-    }
-  };
-
-  const handleSaveWorkflow = (e) => {
-    e.preventDefault();
-    if (editingWorkflow && newWorkflowTitle.trim()) {
-      onEditWorkflow(editingWorkflow.id, newWorkflowTitle.trim()); // Use the prop function
-      setShowWorkflowModal(null);
-      setEditingWorkflow(null);
-    }
-  };
-
   return (
     <aside
       className={`w-72 ${theme.sidebar} CustomScrollbar overflow-y-scroll duration-500 flex flex-col justify-between`}
@@ -208,34 +172,23 @@ export default function Sidebar({
             <ul className="CustomScrollbar rounded-sm max-h-79 overflow-y-auto">
               {workFlows.map((work) => (
                 <li key={work.id} className="w-full">
-                  <div className={`w-full my-0.5 rounded-2xl flex items-center transition-colors h-12 duration-300 ${
-                    work.id === selectedWorkFlowId
-                      ? `${theme.title} text-white`
-                      : `workflow-hover ${getThemeColor(theme.title)}`
-                  }`}>
-                    <button
-                      onClick={() => {
-                        setAboutUsClicked(false);
-                        setSettingsClicked(false);
-                        onSelectKanban(work.id);
-                        navigate('/');
-                      }}
-                      className="flex-1 h-full text-left px-4 relative z-10"
-                    >
-                      <span className="block">
-                        {work.title}
-                      </span>
-                    </button>
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleWorkflowOptions(work);
-                      }}
-                      className="px-4 h-full relative z-10 hover:text-white"
-                    >
-                      ...
-                    </button>
-                  </div>
+                  <button
+                    onClick={() => {
+                      setAboutUsClicked(false);
+                      setSettingsClicked(false);
+                      onSelectKanban(work.id);
+                      navigate('/');
+                    }}
+                    className={`w-full my-0.5 rounded-2xl text-left transition-colors h-12 duration-300 ${
+                      work.id === selectedWorkFlowId
+                        ? `${theme.title} text-white`
+                        : `workflow-hover ${getThemeColor(theme.title)}`
+                    }`}
+                  >
+                    <span className="block w-full px-4 ">
+                      {work.title}
+                    </span>
+                  </button>
                 </li>
               ))}
             </ul>
@@ -249,7 +202,7 @@ export default function Sidebar({
           <img src="../src/assets/help-box-outline.svg" className="Icons w-5 h-5" alt="Help" />
           About Us
         </button>
-        <button className={` flex items-center gap-3 p-2 rounded-md transition transform ${hoverClasses}`}>
+        <button className={`flex items-center gap-3 p-2 rounded-md transition transform ${hoverClasses}`}>
           <img src="../src/assets/FAQ.svg" className="Icons w-5 h-5" alt="FAQ" />
           FAQ
         </button>
@@ -257,7 +210,7 @@ export default function Sidebar({
           <img src="../src/assets/cog.svg" className="Icons w-5 h-5" alt="Settings" />
           Settings
         </button>
-        <button onClick={handleLogout} className=" flex items-center gap-3 p-2 rounded-md transition transform hover:bg-red-500 hover:text-white">
+        <button onClick={handleLogout} className="flex items-center gap-3 p-2 rounded-md transition transform hover:bg-red-100 hover:text-red-600">
           <img src="../src/assets/logout.svg" className="Icons w-5 h-5" alt="Logout" />
           Logout
         </button>
@@ -269,89 +222,6 @@ export default function Sidebar({
           </Button>
         </div>
       </div>
-
-      {/* Workflow Options Modal */}
-      <Modal open={showWorkflowModal !== null} onClose={() => setShowWorkflowModal(null)}>
-        {!editingWorkflow ? (
-          <div>
-            <button
-              className="block w-full text-left py-2 hover:bg-gray-100"
-              onClick={() => handleEditWorkflow(workFlows.find(w => w.id === showWorkflowModal))}
-            >
-              Edit Workflow
-            </button>
-            <button
-              className="block w-full text-left py-2 text-red-600 hover:bg-gray-100"
-              onClick={() => {
-                setEditingWorkflow(workFlows.find(w => w.id === showWorkflowModal));
-                setShowDeleteConfirm(true);
-              }}
-            >
-              Delete Workflow
-            </button>
-          </div>
-        ) : (
-          <form onSubmit={handleSaveWorkflow}>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Workflow Name
-              </label>
-              <input
-                type="text"
-                value={newWorkflowTitle || ''} // Add default empty string
-                onChange={(e) => setNewWorkflowTitle(e.target.value)}
-                className="w-full border rounded p-2 mb-4"
-                required
-              />
-            </div>
-            <div className="flex justify-end gap-2">
-              <button
-                type="button"
-                onClick={() => {
-                  setShowWorkflowModal(null);
-                  setEditingWorkflow(null);
-                }}
-                className="px-3 py-1 text-gray-600 hover:bg-gray-100 rounded"
-              >
-                Cancel
-              </button>
-              <button
-                type="submit"
-                className="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700"
-              >
-                Save
-              </button>
-            </div>
-          </form>
-        )}
-      </Modal>
-
-      {/* Delete Confirmation Modal */}
-      <Modal
-        open={showDeleteConfirm}
-        onClose={() => setShowDeleteConfirm(false)}
-      >
-        <div className="text-center">
-          <h3 className="text-lg font-semibold mb-2">Delete Workflow</h3>
-          <p className="text-gray-600 mb-4">
-            Are you sure you want to delete this workflow? This action cannot be undone.
-          </p>
-          <div className="flex justify-end gap-2">
-            <button
-              onClick={() => setShowDeleteConfirm(false)}
-              className="px-3 py-1 text-gray-600 hover:bg-gray-100 rounded"
-            >
-              Cancel
-            </button>
-            <button
-              onClick={handleDeleteWorkflow}
-              className="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700"
-            >
-              Delete
-            </button>
-          </div>
-        </div>
-      </Modal>
     </aside>
   );
 }

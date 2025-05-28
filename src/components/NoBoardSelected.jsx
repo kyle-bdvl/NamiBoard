@@ -6,16 +6,22 @@ export default function NoBoardSelected({ startWorkFlow }) {
         alt="No Project Selected" 
         className="w-24 h-24 opacity-60 mx-auto"
       />
-      <h2 className="text-2xl font-semibold text-gray-800">No Project Selected</h2>
-      <p className="text-gray-600 text-base">
-        Select a project or get started with a new Workflow
-      </p>
-      <button 
-        className="mt-4 bg-blue-500 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-md transition-colors duration-300"
-        onClick={startWorkFlow}
-      >
-        Create New Project
-      </button>
+      <div className="flex flex-col items-center justify-center p-6 bg-white rounded-xl shadow-md">
+  <h2 className="text-3xl font-bold text-gray-800 mb-2">No Project Selected</h2>
+  <p className="text-gray-600 text-center text-base mb-4">
+    Please select a project or start a new workflow to begin.
+  </p>
+  <button 
+    className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-5 rounded-lg shadow transition duration-300"
+    onClick={startWorkFlow}
+  >
+    <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
+    </svg>
+    Create New Project
+  </button>
+</div>
+
     </div>
   );
 }
