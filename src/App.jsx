@@ -255,19 +255,20 @@ function App() {
               onLogout={() => setLoggedIn(false)}
               settingsClicked={settingsClicked}
               setSettingsClicked={setSettingsClicked}
-              selectedWorkFlowId={projectsState.selectedWorkFlowId} 
+              selectedWorkFlowId={projectsState.selectedWorkFlowId}
             />
           ) : (
             <Button
               onClick={() => setHideSideBar(!SideBar)}
-              className="bg-gradient-to-r from-gray-400 to-gray-600 px-3 bg-opacity-80 hover:bg-opacity-100 text-white p-2 rounded-md fixed top-4 left-4 z-50 transition-all duration-400"
+              className="bg-gradient-to-r from-gray-400 to-gray-600 px-3 text-white p-2 rounded-md fixed top-4 left-4 z-50 
+           hover:opacity-80 active:opacity-60 transition duration-200"
               aria-label="Toggle Sidebar"
             >
               <img
                 src="../src/assets/chevron-triple-right.svg"
                 alt="backButton"
                 className="w-6 h-6"
-              />  
+              />
             </Button>
           )}
 

@@ -15,10 +15,8 @@
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "react-router-dom": "^7.6.0",
-
     "router": "^2.2.0",
-
-
+    "tailwind-scrollbar": "^4.0.2",
     "tailwindcss": "^4.1.6"
   },
   "devDependencies": {

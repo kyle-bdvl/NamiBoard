@@ -95,7 +95,7 @@ export default function Sidebar({
 
   return (
     <aside
-      className={`w-72 ${theme.sidebar} duration-500 flex flex-col justify-between`}
+      className={`w-72 ${theme.sidebar} CustomScrollbar overflow-y-scroll duration-500 flex flex-col justify-between`}
       style={{
         boxShadow:
           '6px 0 15px -3px rgba(0, 0, 0, 0.2), 3px 0 8px -4px rgba(0, 0, 0, 0.1)',
@@ -215,7 +215,6 @@ export default function Sidebar({
         </div>
 
       </div>
-
     </aside>
   );
 }
