@@ -65,7 +65,7 @@
 
 .workflow-hover {
   position: relative;
-  display: inline-block;
+  display: flex;
   overflow: hidden;
   width: 100%;
 }
@@ -85,6 +85,12 @@
   width: 100%;
   transform: translateX(-103%);
   transition: transform 0.4s ease-in-out;
+  z-index: 1;
+}
+
+/* Add hover state for the entire group */
+.workflow-hover:hover button span {
+  color: white;
 }
 
 /* Theme specific colors */
@@ -125,7 +131,7 @@
 }
 
 
-.Icons{
-  filter: invert(50%) sepia(22%) saturate(171%) hue-rotate(180deg) brightness(88%) contrast(88%);
-  /* filter: invert(99%) sepia(84%) saturate(2846%) hue-rotate(178deg) brightness(110%) contrast(103%); */
+button:hover >.Icons {
+  /* filter: invert(50%) sepia(22%) saturate(171%) hue-rotate(180deg) brightness(88%) contrast(88%); */
+  filter: invert(99%) sepia(84%) saturate(2846%) hue-rotate(178deg) brightness(110%) contrast(103%);
 }

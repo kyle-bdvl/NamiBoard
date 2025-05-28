@@ -244,6 +244,25 @@ function App() {
     setProjectsState(prevState => ({ ...prevState, selectedWorkFlowId: id }));
   }
 
+  function handleEditWorkflow(workflowId, newTitle) {
+    setProjectsState(prevState => ({
+      ...prevState,
+      WorkFlow: prevState.WorkFlow.map(workflow =>
+        workflow.id === workflowId
+          ? { ...workflow, title: newTitle }
+          : workflow
+      )
+    }));
+  }
+
+  function handleDeleteWorkflow(workflowId) {
+    setProjectsState(prevState => ({
+      ...prevState,
+      selectedWorkFlowId: prevState.selectedWorkFlowId === workflowId ? undefined : prevState.selectedWorkFlowId,
+      WorkFlow: prevState.WorkFlow.filter(workflow => workflow.id !== workflowId)
+    }));
+  }
+
   return (
     <>
       {loggedIn ? (
@@ -258,11 +277,13 @@ function App() {
               settingsClicked={settingsClicked}
               setSettingsClicked={setSettingsClicked}
               selectedWorkFlowId={projectsState.selectedWorkFlowId}
-              theme={theme}                 // passed here
-              setTheme={setTheme}           // passed here
+              theme={theme}
+              setTheme={setTheme}
+              onEditWorkflow={handleEditWorkflow}
+              onDeleteWorkflow={handleDeleteWorkflow}
             />
           ) : (
-            <Button
+            <button
               onClick={() => setHideSideBar(!SideBar)}
               className="bg-gradient-to-r from-gray-400 to-gray-600 px-3 text-white p-2 rounded-md fixed top-4 left-4 z-50 hover:opacity-80 active:opacity-60 transition duration-200"
               aria-label="Toggle Sidebar"
@@ -272,7 +293,7 @@ function App() {
                 alt="backButton"
                 className="w-6 h-6"
               />
-            </Button>
+            </button>
           )}
 
           {/* Main content area */}
@@ -285,6 +306,7 @@ function App() {
                     <CreateKanbanBoard
                       onAdd={handleAddWorkFlow}
                       onCancel={handleCancelWorkFlow}
+                      theme={theme}
                     />
                   ) : projectsState.selectedWorkFlowId === undefined ? (
                     <NoBoardSelected startWorkFlow={handleStartWorkFlow} />
@@ -332,5 +354,4 @@ function App() {
     </>
   );
 }
-
 export default App;

@@ -147,8 +147,7 @@ function SignUpPage() {
           <span className="text-gray-600">Already have an account? </span>
           <span
             className="text-indigo-600 cursor-pointer underline hover:text-indigo-800 font-semibold"
-            onClick={() => navigate("/Login")}
-          >
+            onClick={() => navigate("/Login")}>
             Login
           </span>
         </div>
