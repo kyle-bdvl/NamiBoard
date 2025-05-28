@@ -12,7 +12,8 @@ export default function SelectedKanbanBoard({
   onDeleteTask,
   onEditTask,        // Add these props
   onAddTaskFile,
-  userProfile
+  userProfile,
+  theme
 }) {
   const [showColumn, setShowColumn] = useState(false);
 
@@ -27,7 +28,7 @@ export default function SelectedKanbanBoard({
   return (
     <main className="flex flex-col flex-grow p-6 bg-slate-100 overflow-x-auto min-h-screen">
       {/* Header Section */}
-      <Header workFlow={workFlow} userProfile={userProfile} />
+      <Header workFlow={workFlow} userProfile={userProfile} theme={theme} />
 
       {/* Add Column Section */}
       <div className="mb-6">

@@ -11,18 +11,14 @@ export default function Sidebar({
   onLogout,
   settingsClicked,
   setSettingsClicked,
-  selectedWorkFlowId
+  selectedWorkFlowId,
+  theme,          // lifted from App.jsx
+  setTheme        // lifted from App.jsx
 }) {
   const [aboutUsClicked, setAboutUsClicked] = useState(false);
   const [logoAnimate, setLogoAnimate] = useState(false);
-
-  const [theme, setTheme] = useState({ sidebar: 'bg-purple-200', title: 'bg-purple-900' });
   let scrollTimeout = null;
-
   const navigate = useNavigate();
-
-  // to be placed in the className for aboutUs, FAQ, and Settings buttons 
-
 
   const handleLogout = () => {
     setAboutUsClicked(false);
@@ -42,12 +38,12 @@ export default function Sidebar({
     if (settingsClicked) {
       setAboutUsClicked(false);
       setSettingsClicked(false);
-      onSelectKanban(null);  // clear workflow selection
+      onSelectKanban(null);
       navigate('/');
     } else {
       setAboutUsClicked(false);
       setSettingsClicked(true);
-      onSelectKanban(null);  // clear workflow selection
+      onSelectKanban(null);
       navigate('/settings');
     }
   };
@@ -56,12 +52,12 @@ export default function Sidebar({
     if (aboutUsClicked) {
       setSettingsClicked(false);
       setAboutUsClicked(false);
-      onSelectKanban(null);  // clear workflow selection
+      onSelectKanban(null);
       navigate('/');
     } else {
       setSettingsClicked(false);
       setAboutUsClicked(true);
-      onSelectKanban(null);  // clear workflow selection
+      onSelectKanban(null);
       navigate('/aboutUs');
     }
   };
@@ -73,6 +69,7 @@ export default function Sidebar({
   const handleThemeChange = (newTheme) => {
     setTheme(newTheme);
   };
+
   let hoverClasses = '';
 
   if (theme.title === 'bg-blue-900') {
@@ -90,13 +87,9 @@ export default function Sidebar({
   } else if (theme.title === 'bg-gray-900') {
     hoverClasses = 'hover:bg-gray-700 hover:text-white hover:ring-2 hover:ring-gray-900 hover:ring-offset-2';
   } else {
-    // Fallback classes
     hoverClasses = 'hover:bg-blue-700 hover:text-white hover:ring-2 hover:ring-blue-900 hover:ring-offset-2';
   }
 
-  console.log(hoverClasses)
-
-  // Add this helper function at the top of your component
   const getThemeColor = (theme) => {
     const colorMap = {
       'bg-blue-900': 'blue',
@@ -114,29 +107,19 @@ export default function Sidebar({
     const handleScroll = (e) => {
       const element = e.target;
       element.classList.add('scrolling');
-      
-      // Clear the previous timeout
-      if (scrollTimeout) {
-        clearTimeout(scrollTimeout);
-      }
-
-      // Set new timeout
+      if (scrollTimeout) clearTimeout(scrollTimeout);
       scrollTimeout = setTimeout(() => {
         element.classList.remove('scrolling');
       }, 1000);
     };
 
-    // Add event listeners to all CustomScrollbar elements
     const scrollableElements = document.querySelectorAll('.CustomScrollbar');
     scrollableElements.forEach(element => {
       element.addEventListener('scroll', handleScroll);
     });
 
-    // Cleanup
     return () => {
-      if (scrollTimeout) {
-        clearTimeout(scrollTimeout);
-      }
+      if (scrollTimeout) clearTimeout(scrollTimeout);
       scrollableElements.forEach(element => {
         element.removeEventListener('scroll', handleScroll);
       });
@@ -147,36 +130,28 @@ export default function Sidebar({
     <aside
       className={`w-72 ${theme.sidebar} CustomScrollbar overflow-y-scroll duration-500 flex flex-col justify-between`}
       style={{
-        boxShadow:
-          '6px 0 15px -3px rgba(0, 0, 0, 0.2), 3px 0 8px -4px rgba(0, 0, 0, 0.1)',
+        boxShadow: '6px 0 15px -3px rgba(0, 0, 0, 0.2), 3px 0 8px -4px rgba(0, 0, 0, 0.1)',
       }}>
-
       {/* Top */}
-      <div className=" px-4 pt-4 flex flex-col gap-6 m-0">
+      <div className="px-4 pt-4 flex flex-col gap-6 m-0">
         {/* Logo */}
-
         <div
-
-          className="bg-blue-900 shadow-md rounded-lg p-4 flex items-center gap-3 cursor-pointer"
-
+          className={`bg-blue-900 shadow-md rounded-lg p-4 flex items-center gap-3 cursor-pointer ${theme.title}`}
           onDoubleClick={handleLogoDoubleClick}
         >
-
           <img
             src="../src/assets/waveLogo.webp"
             alt="waveLogo"
             className={`w-8 h-8 transition-all ${logoAnimate ? 'animate-wave' : ''}`}
           />
-
           <h2 className={`text-2xl font-bold text-white transition-all ${logoAnimate ? 'animate-wave' : ''}`}>
             NamiBoard
           </h2>
-
         </div>
 
         {/* Add Workflow Button */}
         <div className="flex flex-row justify-center">
-          <Button row={true} onClick={handleAddWorkflow}>
+          <Button row={true} onClick={handleAddWorkflow} className={`${theme.title}`}>
             Add WorkFlow
             <img
               className="w-4 h-4 ml-2"
@@ -208,7 +183,8 @@ export default function Sidebar({
                       work.id === selectedWorkFlowId
                         ? `${theme.title} text-white`
                         : `workflow-hover ${getThemeColor(theme.title)}`
-                    }`}>
+                    }`}
+                  >
                     <span className="block w-full px-4 ">
                       {work.title}
                     </span>
@@ -222,49 +198,29 @@ export default function Sidebar({
 
       {/* Bottom Utility Links */}
       <div className="mt-10 border-t border-gray-300 pt-4 px-4 space-y-2 text-[15px] text-gray-700">
-        <button
-          onClick={handleAboutUsClick}
-          className={`flex items-center gap-3 p-2 rounded-md transition transform ${hoverClasses}`}
-        >
-          <img
-            src="../src/assets/help-box-outline.svg"
-            className="w-5 h-5"
-            alt="Help"
-          />
+        <button onClick={handleAboutUsClick} className={`flex items-center gap-3 p-2 rounded-md transition transform ${hoverClasses}`}>
+          <img src="../src/assets/help-box-outline.svg" className="Icons w-5 h-5" alt="Help" />
           About Us
         </button>
-        <button
-          className={`flex items-center gap-3 p-2 rounded-md transition transform ${hoverClasses}`}
-        >
-          <img
-            src="../src/assets/FAQ.svg"
-            className="w-5 h-5"
-            alt="FAQ"
-          />
+        <button className={`flex items-center gap-3 p-2 rounded-md transition transform ${hoverClasses}`}>
+          <img src="../src/assets/FAQ.svg" className="Icons w-5 h-5" alt="FAQ" />
           FAQ
         </button>
-        <button
-          onClick={handleSettingsClick}
-          className={`flex items-center gap-3 p-2 rounded-md transition transform ${hoverClasses}`}
-        >
-          <img src="../src/assets/cog.svg" className="w-5 h-5" alt="Settings" />
+        <button onClick={handleSettingsClick} className={`flex items-center gap-3 p-2 rounded-md transition transform ${hoverClasses}`}>
+          <img src="../src/assets/cog.svg" className="Icons w-5 h-5" alt="Settings" />
           Settings
         </button>
-        <button
-          onClick={handleLogout}
-          className="flex items-center gap-3 p-2 rounded-md transition transform hover:bg-red-100 hover:text-red-600"
-        >
-          <img src="../src/assets/logout.svg" className="w-5 h-5" alt="Logout" />
+        <button onClick={handleLogout} className="flex items-center gap-3 p-2 rounded-md transition transform hover:bg-red-100 hover:text-red-600">
+          <img src="../src/assets/logout.svg" className="Icons w-5 h-5" alt="Logout" />
           Logout
         </button>
-        <ThemeSettings onThemeChange={handleThemeChange} />
+        <ThemeSettings theme={theme} onThemeChange={handleThemeChange} />
         <div className="flex justify-center pb-4">
-          <Button onClick={onSideBarToggle}>
-            <img className="w-8 h-8" src="../src/assets/eye-off.svg" alt="hideSideBar" />
+          <Button className={`${theme.title}`} onClick={onSideBarToggle} >
+            <img className="Icons w-8 h-8" src="../src/assets/eye-off.svg" alt="hideSideBar" />
             Hide SideBar
           </Button>
         </div>
-
       </div>
     </aside>
   );

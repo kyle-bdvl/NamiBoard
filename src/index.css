@@ -123,3 +123,9 @@
 .workflow-hover:hover span {
   color: white;
 }
+
+
+.Icons{
+  filter: invert(50%) sepia(22%) saturate(171%) hue-rotate(180deg) brightness(88%) contrast(88%);
+  /* filter: invert(99%) sepia(84%) saturate(2846%) hue-rotate(178deg) brightness(110%) contrast(103%); */
+}

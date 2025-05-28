@@ -18,12 +18,14 @@ function App() {
     selectedWorkFlowId: undefined,
     WorkFlow: []
   });
-  const [settingsClicked, setSettingsClicked] = useState(false); // lifted state
+  const [settingsClicked, setSettingsClicked] = useState(false);
   const [userProfile, setUserProfile] = useState({
     firstName: "Molly",
     lastName: "Potter",
     email: "molly@example.com"
   });
+  // Lifted Theme state
+  const [theme, setTheme] = useState({ sidebar: 'bg-blue-200', title: 'bg-blue-900' });
 
 
   function handleLogin() {
@@ -256,12 +258,13 @@ function App() {
               settingsClicked={settingsClicked}
               setSettingsClicked={setSettingsClicked}
               selectedWorkFlowId={projectsState.selectedWorkFlowId}
+              theme={theme}                 // passed here
+              setTheme={setTheme}           // passed here
             />
           ) : (
             <Button
               onClick={() => setHideSideBar(!SideBar)}
-              className="bg-gradient-to-r from-gray-400 to-gray-600 px-3 text-white p-2 rounded-md fixed top-4 left-4 z-50 
-           hover:opacity-80 active:opacity-60 transition duration-200"
+              className="bg-gradient-to-r from-gray-400 to-gray-600 px-3 text-white p-2 rounded-md fixed top-4 left-4 z-50 hover:opacity-80 active:opacity-60 transition duration-200"
               aria-label="Toggle Sidebar"
             >
               <img
@@ -272,7 +275,7 @@ function App() {
             </Button>
           )}
 
-          {/* Main content area with left margin when sidebar is hidden */}
+          {/* Main content area */}
           <div className={`flex-1 overflow-auto transition-[margin] duration-500 ease-in-out ${SideBar ? "ml-0" : "ml-20"}`}>
             <Routes>
               <Route
@@ -298,6 +301,7 @@ function App() {
                       onEditTask={handleEditTask}
                       onAddTaskFile={handleAddTaskFile}
                       userProfile={userProfile}
+                      theme={theme}  
                     />
                   )
                 }
