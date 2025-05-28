@@ -66,7 +66,7 @@ export default function Settings({ userProfile, setUserProfile, settingsClicked,
   } else if (theme.title === 'bg-indigo-900') {
     hoverClasses = 'bg-indigo-500 hover:bg-indigo-700 hover:text-white hover:ring-2 hover:ring-indigo-900 hover:ring-offset-2';
   } else if (theme.title === 'bg-gray-900') {
-    hoverClasses = 'hover:bg-gray-700 hover:text-white hover:ring-2 hover:ring-gray-900 hover:ring-offset-2';
+    hoverClasses = 'bg-gray-500 hover:bg-gray-700 hover:text-white hover:ring-2 hover:ring-gray-900 hover:ring-offset-2';
   } else {
     hoverClasses = 'bg-gray-500 hover:bg-blue-700 hover:text-white hover:ring-2 hover:ring-blue-900 hover:ring-offset-2';
   }
