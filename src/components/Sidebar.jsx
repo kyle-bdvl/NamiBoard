@@ -190,8 +190,8 @@ export default function Sidebar({
           <Button row={true} onClick={handleAddWorkflow} className={`${theme.sidebar} ${hoverClasses}`}>
             Add WorkFlow
             <img
-              className="w-4 h-4 ml-2"
-              src="../src/assets/addIcon.png"
+              className="Icons w-6 h-6 ml-2"
+              src="../src/assets/plus.svg"
               alt="AddButton"
             />
           </Button>
