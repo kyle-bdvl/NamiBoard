@@ -220,7 +220,7 @@ export default function Sidebar({
                         onSelectKanban(work.id);
                         navigate('/');
                       }}
-                      className="flex-1 h-full text-left px-4 relative z-10"
+                      className="flex-1 break-all h-full text-left px-4 relative z-10"
                     >
                       <span className="block">
                         {work.title}
@@ -297,6 +297,7 @@ export default function Sidebar({
                 Workflow Name
               </label>
               <input
+              maxLength="20"
                 type="text"
                 value={newWorkflowTitle || ''} // Add default empty string
                 onChange={(e) => setNewWorkflowTitle(e.target.value)}
