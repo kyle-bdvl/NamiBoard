@@ -15,8 +15,10 @@ export default function Sidebar({
 }) {
   const [aboutUsClicked, setAboutUsClicked] = useState(false);
   const [logoAnimate, setLogoAnimate] = useState(false);
+
   const [theme, setTheme] = useState({ sidebar: 'bg-purple-200', title: 'bg-purple-900' });
   let scrollTimeout = null;
+
   const navigate = useNavigate();
 
   // to be placed in the className for aboutUs, FAQ, and Settings buttons 
