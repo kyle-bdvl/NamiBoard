@@ -336,6 +336,7 @@ function App() {
                     setUserProfile={setUserProfile}
                     settingsClicked={settingsClicked}
                     setSettingsClicked={setSettingsClicked}
+                    theme={theme}
                   />
                 }
               />

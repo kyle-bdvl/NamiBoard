@@ -257,8 +257,8 @@ export default function Sidebar({
           <img src="../src/assets/cog.svg" className="Icons w-5 h-5" alt="Settings" />
           Settings
         </button>
-        <button onClick={handleLogout} className="flex items-center gap-3 p-2 rounded-md transition transform hover:bg-red-100 hover:text-red-600">
-          <img src="../src/assets/logout.svg" className="w-5 h-5" alt="Logout" />
+        <button onClick={handleLogout} className=" flex items-center gap-3 p-2 rounded-md transition transform hover:bg-red-500 hover:text-white">
+          <img src="../src/assets/logout.svg" className="Icons w-5 h-5" alt="Logout" />
           Logout
         </button>
         <ThemeSettings theme={theme} onThemeChange={handleThemeChange} />
