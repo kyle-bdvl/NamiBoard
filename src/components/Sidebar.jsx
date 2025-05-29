@@ -13,16 +13,16 @@ export default function Sidebar({
   settingsClicked,
   setSettingsClicked,
   selectedWorkFlowId,
-  theme,          // lifted from App.jsx
-  setTheme,        // lifted from App.jsx
-  onEditWorkflow,    // Add these props
-  onDeleteWorkflow   // Add these props
+  theme,           
+  setTheme,        
+  onEditWorkflow,    
+  onDeleteWorkflow   
 }) {
   const [aboutUsClicked, setAboutUsClicked] = useState(false);
   const [logoAnimate, setLogoAnimate] = useState(false);
   let scrollTimeout = null;
   const navigate = useNavigate();
-
+  //All these use states are being used in the modal
   const [showWorkflowModal, setShowWorkflowModal] = useState(null);
   const [editingWorkflow, setEditingWorkflow] = useState(null);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
@@ -41,7 +41,7 @@ export default function Sidebar({
     navigate('/');
     startWorkFlow();
   };
-
+  //To navigate on and off from the settings page
   const handleSettingsClick = () => {
     if (settingsClicked) {
       setAboutUsClicked(false);
@@ -55,7 +55,7 @@ export default function Sidebar({
       navigate('/settings');
     }
   };
-
+//To navigate on and off from the aboutUs Page
   const handleAboutUsClick = () => {
     if (aboutUsClicked) {
       setSettingsClicked(false);
@@ -69,11 +69,11 @@ export default function Sidebar({
       navigate('/aboutUs');
     }
   };
-
+  // Fun animation for NamiBoard Logo
   const handleLogoDoubleClick = () => {
     setLogoAnimate(prev => !prev);
   };
-
+  // Allows for theme change
   const handleThemeChange = (newTheme) => {
     setTheme(newTheme);
   };
@@ -227,6 +227,7 @@ export default function Sidebar({
                       </span>
                     </button>
                     <button
+                    // Only handle this click here—don't let it bubble up to any parent onClick handlers
                       onClick={(e) => {
                         e.stopPropagation();
                         handleWorkflowOptions(work);
