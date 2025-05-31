@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import Settings from './components/Settings';
 import CreateKanbanBoard from './components/createKanbanBoard.jsx';
@@ -12,6 +12,23 @@ import Button from './components/Buttons';
 import './App.css';
 
 function App() {
+
+  // this is to fetch the data from the backend
+  const [backend, setBackend] = useState([{}]);
+
+  useEffect(()=>{
+    // we can use the relative route instead of localhost:5000 because we have already initialized it in the package.json as Proxy
+    fetch("/api").then(
+      reponse=> reponse.json()
+    ).then(
+      data=>{
+        setBackend(data)
+      }
+    ).catch(
+      err=> console.error(err)
+    );
+  },[])
+
   const [loggedIn, setLoggedIn] = useState(false);
   const [SideBar, setHideSideBar] = useState(true);
   const [projectsState, setProjectsState] = useState({
@@ -347,7 +364,7 @@ function App() {
         </main>
       ) : (
         <Routes>
-          <Route path="/login" element={<LoginPage onLogin={handleLogin} />} />
+          <Route path="/login" element={<LoginPage onLogin={handleLogin} backend={backend}/>} />
           <Route path="/signup" element={<SignUp />} />
           <Route path="*" element={<Navigate to="/login" />} />
         </Routes>
