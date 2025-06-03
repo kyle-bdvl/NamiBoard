@@ -47,7 +47,7 @@ function LoginPage({ onLogin ,backend}) {
   return (
     <>
       <div>
-        {backend.users ? (
+        {backend.users && backend ? (
           backend.users.map((user, i) => <p key={i}>{user}</p>)
         ) : (
           <p>Loading...</p>
