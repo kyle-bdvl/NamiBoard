@@ -1,9 +1,10 @@
-import { useRef,useState } from 'react';
+import { useRef, useState } from 'react';
 
 export default function CreateTask({ columnId, onAddTask }) {
   const titleRef = useRef();
   const descRef = useRef();
   const [file, setFile] = useState(null);
+  const [priority, setPriority] = useState('Medium');  // new state for priority
 
   function handleAdd() {
     const title = titleRef.current.value.trim();
@@ -14,11 +15,12 @@ export default function CreateTask({ columnId, onAddTask }) {
       return;
     }
 
-
-    onAddTask(columnId, title, description, file); // Send task text + column ID to parent
+    // Pass priority as an additional argument.
+    onAddTask(columnId, title, description, file, priority);
     titleRef.current.value = '';
     descRef.current.value = '';
     setFile(null);
+    setPriority('Medium');
   }
 
   return (
@@ -32,10 +34,23 @@ export default function CreateTask({ columnId, onAddTask }) {
       <textarea
         ref={descRef}
         placeholder="Description"
-        className="text-sm p-2 rounded w-full"
+        className="text-sm p-2 rounded w-full mb-1"
         rows={2}
       />
-      <button onClick={handleAdd} className="text-xs bg-blue-600 text-white px-2 py-1 rounded w-full">
+      {/* New Priority Selection */}
+      <select
+        value={priority}
+        onChange={e => setPriority(e.target.value)}
+        className="text-sm p-1 rounded w-full mb-1 border border-gray-300"
+      >
+        <option value="High">High</option>
+        <option value="Medium">Medium</option>
+        <option value="Low">Low</option>
+      </select>
+      <button
+        onClick={handleAdd}
+        className="text-xs bg-blue-600 text-white px-2 py-1 rounded w-full"
+      >
         Add Task
       </button>
     </div>

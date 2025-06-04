@@ -1,23 +1,44 @@
 import React, { useState } from "react";
 import Modal from "./Modal";
 
-export default function Task({ task, columnId, onDelete, onEdit, onAddFile }) {
+export default function Task({ task, columnId, onDelete, onEdit, onAddFile, onComplete }) {
   const [showTaskModal, setShowTaskModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showFileModal, setShowFileModal] = useState(false);
   const [editTitle, setEditTitle] = useState(task.title);
   const [editDescription, setEditDescription] = useState(task.description || "");
+  const [editPriority, setEditPriority] = useState(task.priority || "Medium");
 
   const handleEditSubmit = (e) => {
     e.preventDefault();
-    onEdit(editTitle, editDescription);  // ColumnId/taskId handled in parent
+    onEdit(editTitle, editDescription, editPriority);
     setShowEditModal(false);
   };
 
   return (
     <li className="bg-white p-4 rounded-md shadow border border-gray-200 text-sm space-y-2">
-      <div className="flex justify-between items-start">
-        <h4 className="font-semibold text-base flex-1 break-all">{task.title}</h4>
+      <div className="flex justify-between items-center">
+        <div className="flex items-center gap-2 flex-1">
+          {/* Check button to mark complete */}
+          <button
+            onClick={() => onComplete(task.id)}
+            className={`w-6 h-6 flex-shrink-0 rounded-full border ${
+              task.completed ? "bg-green-500 border-green-500" : "bg-white border-gray-300"
+            }`}
+            title="Mark as complete"
+          >
+            {task.completed && (
+              <span className="text-white text-xs flex items-center justify-center">&#10003;</span>
+            )}
+          </button>
+          <h4 className="font-semibold text-base break-all">{task.title}</h4>
+          {/* Priority badge */}
+          {task.priority && (
+            <span className="ml-2 text-xs font-medium px-1 py-0.5 rounded bg-yellow-100 text-yellow-800">
+              {task.priority}
+            </span>
+          )}
+        </div>
         <button
           className="text-lg px-2"
           onClick={() => setShowTaskModal(true)}
@@ -64,6 +85,7 @@ export default function Task({ task, columnId, onDelete, onEdit, onAddFile }) {
               setShowTaskModal(false);
               setEditTitle(task.title);
               setEditDescription(task.description || "");
+              setEditPriority(task.priority || "Medium");
               setShowEditModal(true);
             }}
           >
@@ -81,7 +103,7 @@ export default function Task({ task, columnId, onDelete, onEdit, onAddFile }) {
         </div>
       </Modal>
 
-      {/* Edit Task Modal */}
+      {/* Edit / Create Task Modal (integrated with priority) */}
       <Modal open={showEditModal} onClose={() => setShowEditModal(false)}>
         <div className="p-6 bg-white rounded-md shadow-md">
           <form onSubmit={handleEditSubmit}>
@@ -109,6 +131,21 @@ export default function Task({ task, columnId, onDelete, onEdit, onAddFile }) {
                   rows="3"
                 />
               </div>
+              {/* New Priority Field */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700">
+                  Priority
+                </label>
+                <select
+                  value={editPriority}
+                  onChange={(e) => setEditPriority(e.target.value)}
+                  className="mt-1 w-full rounded-md border border-gray-300 p-1"
+                >
+                  <option value="High">High</option>
+                  <option value="Medium">Medium</option>
+                  <option value="Low">Low</option>
+                </select>
+              </div>
               <div className="flex justify-end gap-2">
                 <button
                   type="button"
@@ -129,7 +166,7 @@ export default function Task({ task, columnId, onDelete, onEdit, onAddFile }) {
         </div>
       </Modal>
 
-      {/* File upload modal */}
+      {/* File upload modal remains unchanged */}
       <Modal open={showFileModal} onClose={() => setShowFileModal(false)}>
         <div className="p-6 bg-white rounded-md shadow-md text-center">
           <input

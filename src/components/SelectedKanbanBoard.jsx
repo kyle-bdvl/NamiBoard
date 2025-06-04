@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import Header from './Header.jsx';
 import CreateColumn from './CreateColumn.jsx';
 import Column from './Columns.jsx';
@@ -8,10 +8,11 @@ export default function SelectedKanbanBoard({
   onAddColumn,
   onAddTask,
   onDeleteColumn,
-  onEditColumn,      // Add these props
+  onEditColumn,
   onDeleteTask,
-  onEditTask,        // Add these props
+  onEditTask,
   onAddTaskFile,
+  onCompleteTask, // new callback passed down
   userProfile,
   theme
 }) {
@@ -25,7 +26,13 @@ export default function SelectedKanbanBoard({
     onAddColumn(title);
   }
 
-   let hoverClasses = '';
+  // Calculate tasks across all columns
+  const allTasks = workFlow.columns?.flatMap(column => column.tasks || []) || [];
+  const totalTasks = allTasks.length;
+  const completedTasks = allTasks.filter(task => task.completed).length;
+  const progressPercent = totalTasks ? Math.round((completedTasks / totalTasks) * 100) : 0;
+
+  let hoverClasses = '';
 
   if (theme.title === 'bg-blue-900') {
     hoverClasses = 'hover:bg-blue-900 hover:text-white hover:ring-2 hover:ring-blue-900 hover:ring-offset-2';
@@ -49,7 +56,20 @@ export default function SelectedKanbanBoard({
     <main className="flex flex-col flex-grow p-6 bg-slate-100 overflow-x-auto min-h-screen">
       {/* Header Section */}
       <Header workFlow={workFlow} userProfile={userProfile} theme={theme} />
-
+      
+      {/* Progress Section */}
+      <div className="mb-4">
+        <p className="text-sm text-gray-700 mb-1">
+          {completedTasks} of {totalTasks} tasks completed
+        </p>
+        <div className="w-full bg-gray-200 rounded-full h-2">
+          <div
+            className="bg-green-500 h-2 rounded-full"
+            style={{ width: `${progressPercent}%` }}
+          ></div>
+        </div>
+      </div>
+      
       {/* Add Column Section */}
       <div className="mb-6">
         {showColumn ? (
@@ -70,10 +90,11 @@ export default function SelectedKanbanBoard({
             columns={workFlow.columns}
             onAddTask={onAddTask}
             onDeleteColumn={onDeleteColumn}
-            onEditColumn={onEditColumn}      // Add these props
+            onEditColumn={onEditColumn}
             onDeleteTask={onDeleteTask}
-            onEditTask={onEditTask}          // Add these props
+            onEditTask={onEditTask}
             onAddTaskFile={onAddTaskFile}
+            onCompleteTask={onCompleteTask} // passing down callback for tasks
           />
         </div>
       ) : (

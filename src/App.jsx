@@ -93,7 +93,7 @@ function App() {
     });
   }
 
-  function handleAddTaskToColumn(columnId, title, description, file) {
+  function handleAddTaskToColumn(columnId, title, description, file, priority) {
     setProjectsState((prevState) => {
       const updatedWorkflows = prevState.WorkFlow.map(workflow => {
         if (workflow.id === prevState.selectedWorkFlowId) {
@@ -106,27 +106,19 @@ function App() {
                   title,
                   description,
                   file: file || null,
+                  priority,         // add priority here
+                  completed: false, // initialize as not completed
                 },
               ];
-              return {
-                ...column,
-                tasks: updatedTasks
-              };
+              return { ...column, tasks: updatedTasks };
             }
             return column;
           });
-          return {
-            ...workflow,
-            columns: updatedColumns
-          };
+          return { ...workflow, columns: updatedColumns };
         }
         return workflow;
       });
-
-      return {
-        ...prevState,
-        WorkFlow: updatedWorkflows
-      };
+      return { ...prevState, WorkFlow: updatedWorkflows };
     });
   }
 
@@ -280,6 +272,27 @@ function App() {
     }));
   }
 
+  function handleCompleteTask(columnId, taskId) {
+    setProjectsState(prevState => {
+      const updatedWorkflows = prevState.WorkFlow.map(workflow => {
+        if (workflow.id === prevState.selectedWorkFlowId) {
+          const updatedColumns = workflow.columns.map(column => {
+            if (column.id === columnId) {
+              const updatedTasks = (column.tasks || []).map(task =>
+                task.id === taskId ? { ...task, completed: !task.completed } : task
+              );
+              return { ...column, tasks: updatedTasks };
+            }
+            return column;
+          });
+          return { ...workflow, columns: updatedColumns };
+        }
+        return workflow;
+      });
+      return { ...prevState, WorkFlow: updatedWorkflows };
+    });
+  }
+
   return (
     <>
       {loggedIn ? (
@@ -340,6 +353,7 @@ function App() {
                       onEditTask={handleEditTask}
                       onAddTaskFile={handleAddTaskFile}
                       userProfile={userProfile}
+                      onCompleteTask={handleCompleteTask}
                       theme={theme}  
                     />
                   )

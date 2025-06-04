@@ -166,6 +166,13 @@ export default function Sidebar({
     }
   };
 
+  // Sort workflows based on dueDate; if missing, use a maximum date.
+  const sortedWorkflows = [...workFlows].sort((a, b) => {
+    const dateA = a.dueDate ? new Date(a.dueDate) : new Date(8640000000000000);
+    const dateB = b.dueDate ? new Date(b.dueDate) : new Date(8640000000000000);
+    return dateA - dateB;
+  });
+
   return (
     <aside
       className={`w-72 ${theme.sidebar} CustomScrollbar overflow-y-scroll duration-500 flex flex-col justify-between`}
@@ -210,46 +217,47 @@ export default function Sidebar({
             <p className="text-sm text-gray-500 mt-2">No workflows yet.</p>
           ) : (
             <ul className="CustomScrollbar rounded-sm max-h-79 overflow-y-auto">
-              {workFlows.map((work) => (
-                 // counts number of Column and Tasks in the workFlow
-                tasksCount =work.columns?.reduce((total, col) => total + (col.tasks?.length || 0), 0) || 0,
-                <li key={work.id} className="w-full mb-3">
-                  <div className={`w-full my-0.5 rounded-2xl flex items-center transition-colors h-18 duration-300 ${
-                    work.id === selectedWorkFlowId
-                      ? `${theme.title} text-white`
-                      : `workflow-hover ${getThemeColor(theme.title)}`
-                  }`}>
-                    <button
-                      onClick={() => {
-                        setAboutUsClicked(false);
-                        setSettingsClicked(false);
-                        onSelectKanban(work.id);
-                        navigate('/');
-                      }}
-                      className="flex-1 break-all h-full text-left px-4 relative z-10"
-                    >
-                      <span className="block">
-                        {work.title}
-                      </span>
-                       <div className="flex items-center gap-2 mt-1 text-xs opacity-75">
-                          <span>{work.columns?.length || 0} columns</span>
-                          <span>•</span>
-                          <span>{tasksCount} tasks</span>
-                        </div>
-                    </button>
-                    <button
-                    // Only handle this click here—don't let it bubble up to any parent onClick handlers
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleWorkflowOptions(work);
-                      }}
-                      className="px-4 h-full relative z-10 hover:text-white"
-                    >
-                      ...
-                    </button>
-                  </div>
-                </li>
-              ))}
+              {sortedWorkflows.map((work) => {
+                tasksCount = work.columns?.reduce((total, col) => total + (col.tasks?.length || 0), 0) || 0;
+                return (
+                  <li key={work.id} className="w-full mb-3">
+                    <div className={`w-full my-0.5 rounded-2xl flex items-center transition-colors h-18 duration-300 ${
+                      work.id === selectedWorkFlowId
+                        ? `${theme.title} text-white`
+                        : `workflow-hover ${getThemeColor(theme.title)}`
+                    }`}>
+                      <button
+                        onClick={() => {
+                          setAboutUsClicked(false);
+                          setSettingsClicked(false);
+                          onSelectKanban(work.id);
+                          navigate('/');
+                        }}
+                        className="flex-1 break-all h-full text-left px-4 relative z-10"
+                      >
+                        <span className="block">
+                          {work.title}
+                        </span>
+                         <div className="flex items-center gap-2 mt-1 text-xs opacity-75">
+                            <span>{work.columns?.length || 0} columns</span>
+                            <span>•</span>
+                            <span>{tasksCount} tasks</span>
+                          </div>
+                      </button>
+                      <button
+                      // Only handle this click here—don't let it bubble up to any parent onClick handlers
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleWorkflowOptions(work);
+                        }}
+                        className="px-4 h-full relative z-10 hover:text-white"
+                      >
+                        ...
+                      </button>
+                    </div>
+                  </li>
+                );
+              })}
             </ul>
           )}
         </div>
