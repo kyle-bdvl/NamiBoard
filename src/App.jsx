@@ -9,26 +9,26 @@ import LoginPage from './components/LoginPage';
 import SignUp from './components/SignUpPage';
 import AboutUs from './components/AboutUs.jsx';
 import Button from './components/Buttons';
+
 import './App.css';
 
 function App() {
-
-  // this is to fetch the data from the backend
+  // Backend state
   const [backend, setBackend] = useState([{}]);
 
-  useEffect(()=>{
-    // we can use the relative route instead of localhost:5000 because we have already initialized it in the package.json as Proxy
+  useEffect(() => {
     fetch("/api").then(
-      reponse=> reponse.json()
+      response => response.json()
     ).then(
-      data=>{
+      data => {
         setBackend(data)
       }
     ).catch(
-      err=> console.error(err)
+      err => console.error(err)
     );
-  },[])
+  }, [])
 
+  // App state
   const [loggedIn, setLoggedIn] = useState(false);
   const [SideBar, setHideSideBar] = useState(true);
   const [projectsState, setProjectsState] = useState({
@@ -41,14 +41,49 @@ function App() {
     lastName: "Potter",
     email: "molly@example.com"
   });
-  // Lifted Theme state
-  const [theme, setTheme] = useState({ sidebar: 'bg-blue-200', title: 'bg-blue-900' });
+  
+  // Theme state with enhanced colors
+  const [theme, setTheme] = useState({ 
+    sidebar: 'bg-blue-200', 
+    title: 'bg-blue-900',
+    accent: 'blue'
+  });
 
+  // Notification state
+  const [notifications, setNotifications] = useState([]);
+
+  // User performance tracking for analytics
+  const [userActivity, setUserActivity] = useState({
+    tasksCompleted: 0,
+    projectsCreated: 0,
+    weeklyProgress: [],
+    productivityScore: 85,
+    completionRate: 72
+  });
 
   function handleLogin() {
     setLoggedIn(true);
-  };
+  }
 
+  // Enhanced task priority sorting function
+  function sortTasksByPriorityAndDate(tasks) {
+    if (!tasks || !Array.isArray(tasks)) return [];
+    
+    const priorityOrder = { 'high': 3, 'medium': 2, 'low': 1 };
+    return [...tasks].sort((a, b) => {
+      // First sort by priority
+      const priorityDiff = (priorityOrder[b.priority] || 2) - (priorityOrder[a.priority] || 2);
+      if (priorityDiff !== 0) return priorityDiff;
+      
+      // Then sort by due date (earlier dates first)
+      if (a.dueDate && b.dueDate) {
+        return new Date(a.dueDate) - new Date(b.dueDate);
+      }
+      if (a.dueDate) return -1;
+      if (b.dueDate) return 1;
+      return 0;
+    });
+  }
 
   function handleAddColumnToWorkflow(columnData) {
     setProjectsState((prevState) => {
@@ -59,7 +94,8 @@ function App() {
             columns: [{
               id: Math.random(),
               ...columnData,
-              color: columnData.color || 'bg-blue-100' // Add color support
+              color: columnData.color || 'bg-gradient-to-br from-blue-50 to-blue-100',
+              tasks: []
             }, ...workflow.columns]
           };
         }
@@ -93,21 +129,28 @@ function App() {
     });
   }
 
-  function handleAddTaskToColumn(columnId, title, description, file) {
+  function handleAddTaskToColumn(columnId, title, description, file, priority = 'medium', dueDate = null) {
     setProjectsState((prevState) => {
       const updatedWorkflows = prevState.WorkFlow.map(workflow => {
         if (workflow.id === prevState.selectedWorkFlowId) {
           const updatedColumns = workflow.columns.map(column => {
             if (column.id === columnId) {
-              const updatedTasks = [
+              const newTask = {
+                id: Date.now(),
+                title,
+                description,
+                file: file || null,
+                priority,
+                dueDate,
+                createdAt: new Date().toISOString(),
+                completed: false
+              };
+              
+              const updatedTasks = sortTasksByPriorityAndDate([
                 ...(column.tasks || []),
-                {
-                  id: Date.now(),
-                  title,
-                  description,
-                  file: file || null,
-                },
-              ];
+                newTask
+              ]);
+              
               return {
                 ...column,
                 tasks: updatedTasks
@@ -122,6 +165,12 @@ function App() {
         }
         return workflow;
       });
+
+      // Update user activity
+      setUserActivity(prev => ({
+        ...prev,
+        tasksCompleted: prev.tasksCompleted + 1
+      }));
 
       return {
         ...prevState,
@@ -177,17 +226,27 @@ function App() {
     });
   }
 
-  function handleEditTask(columnId, taskId, newTitle, newDescription) {
+  function handleEditTask(columnId, taskId, newTitle, newDescription, newPriority, newDueDate) {
     setProjectsState((prevState) => {
       const updatedWorkflows = prevState.WorkFlow.map(workflow => {
         if (workflow.id === prevState.selectedWorkFlowId) {
           const updatedColumns = workflow.columns.map(column => {
             if (column.id === columnId) {
-              const updatedTasks = (column.tasks || []).map(task =>
+              let updatedTasks = (column.tasks || []).map(task =>
                 task.id === taskId
-                  ? { ...task, title: newTitle, description: newDescription }
+                  ? { 
+                      ...task, 
+                      title: newTitle, 
+                      description: newDescription,
+                      priority: newPriority || task.priority,
+                      dueDate: newDueDate !== undefined ? newDueDate : task.dueDate
+                    }
                   : task
               );
+              
+              // Re-sort tasks after editing
+              updatedTasks = sortTasksByPriorityAndDate(updatedTasks);
+              
               return { ...column, tasks: updatedTasks };
             }
             return column;
@@ -221,6 +280,48 @@ function App() {
     });
   }
 
+  function handleCompleteTask(columnId, taskId, completed) {
+    setProjectsState((prevState) => {
+      const updatedWorkflows = prevState.WorkFlow.map((workflow) => {
+        if (workflow.id === prevState.selectedWorkFlowId) {
+          const updatedColumns = workflow.columns.map((column) => {
+            if (column.id === columnId) {
+              const updatedTasks = (column.tasks || []).map((task) => 
+                task.id === taskId 
+                  ? { ...task, completed, completedAt: completed ? new Date().toISOString() : null }
+                  : task
+              );
+              return {
+                ...column,
+                tasks: updatedTasks
+              };
+            }
+            return column;
+          });
+
+          return {
+            ...workflow,
+            columns: updatedColumns
+          };
+        }
+        return workflow;
+      });
+
+      // Update user activity when task is completed
+      if (completed) {
+        setUserActivity(prev => ({
+          ...prev,
+          tasksCompleted: prev.tasksCompleted + 1
+        }));
+      }
+
+      return {
+        ...prevState,
+        WorkFlow: updatedWorkflows
+      };
+    });
+  }
+
   function handleStartWorkFlow() {
     setProjectsState((prevState) => {
       return {
@@ -230,7 +331,6 @@ function App() {
     })
   }
 
-  // function to let to user click off if they don't want to add a workFlow 
   function handleCancelWorkFlow() {
     setProjectsState((prevState) => {
       return {
@@ -240,15 +340,22 @@ function App() {
     })
   }
 
-  // to save the workFlow 
   function handleAddWorkFlow(dataPassed) {
     setProjectsState((prevState) => {
       const workFlowId = Math.random();
       const newWorkFlow = {
         ...dataPassed,
         id: workFlowId,
-        columns: []
+        columns: [],
+        createdAt: new Date().toISOString()
       };
+      
+      // Update user activity
+      setUserActivity(prev => ({
+        ...prev,
+        projectsCreated: prev.projectsCreated + 1
+      }));
+      
       return {
         ...prevState,
         selectedWorkFlowId: undefined,
@@ -261,12 +368,17 @@ function App() {
     setProjectsState(prevState => ({ ...prevState, selectedWorkFlowId: id }));
   }
 
-  function handleEditWorkflow(workflowId, newTitle) {
+  function handleEditWorkflow(workflowId, updateData) {
     setProjectsState(prevState => ({
       ...prevState,
       WorkFlow: prevState.WorkFlow.map(workflow =>
         workflow.id === workflowId
-          ? { ...workflow, title: newTitle }
+          ? { 
+              ...workflow, 
+              title: updateData.title || workflow.title,
+              objective: updateData.objective || workflow.objective,
+              dueDate: updateData.dueDate || workflow.dueDate
+            }
           : workflow
       )
     }));
@@ -280,10 +392,61 @@ function App() {
     }));
   }
 
+  // Check for upcoming deadlines and add notifications
+  useEffect(() => {
+    const checkDeadlines = () => {
+      const today = new Date();
+      const newNotifications = [];
+
+      if (projectsState.WorkFlow && Array.isArray(projectsState.WorkFlow)) {
+        projectsState.WorkFlow.forEach(workflow => {
+          if (workflow.dueDate) {
+            const dueDate = new Date(workflow.dueDate);
+            const daysUntilDue = Math.ceil((dueDate - today) / (1000 * 60 * 60 * 24));
+            
+            if ([7, 3, 1].includes(daysUntilDue) && daysUntilDue > 0) {
+              newNotifications.push({
+                id: `deadline-${workflow.id}-${daysUntilDue}`,
+                type: 'deadline',
+                title: `Project Due Soon`,
+                message: `"${workflow.title}" is due in ${daysUntilDue} day${daysUntilDue > 1 ? 's' : ''}`,
+                timestamp: new Date().toISOString(),
+                workflowId: workflow.id
+              });
+            }
+          }
+        });
+      }
+
+      if (newNotifications.length > 0) {
+        setNotifications(prev => [
+          ...newNotifications.filter(newNotif => 
+            !prev.some(existingNotif => existingNotif.id === newNotif.id)
+          ),
+          ...prev
+        ]);
+      }
+    };
+
+    // Only check on mount and when workflows change
+    checkDeadlines();
+    
+    // Check daily instead of constantly
+    const interval = setInterval(checkDeadlines, 24 * 60 * 60 * 1000);
+    
+    return () => clearInterval(interval);
+  }, [projectsState.WorkFlow.length]); // Only depend on length to avoid constant re-runs
+
+  const dismissNotification = (notificationId) => {
+    setNotifications(prev => prev.filter(notif => notif.id !== notificationId));
+  };
+
   return (
     <>
       {loggedIn ? (
-        <main className="h-screen flex relative bg-slate-100">
+        <main className="h-screen flex relative bg-gradient-to-br from-slate-50 to-slate-100">
+          
+          
           {SideBar ? (
             <Sidebar
               startWorkFlow={handleStartWorkFlow}
@@ -302,12 +465,12 @@ function App() {
           ) : (
             <button
               onClick={() => setHideSideBar(!SideBar)}
-              className="bg-gradient-to-r from-gray-400 to-gray-600 px-3 text-white p-2 rounded-md fixed top-4 left-4 z-50 hover:opacity-80 active:opacity-60 transition duration-200"
+              className="bg-gradient-to-r from-blue-500 to-blue-600 px-3 text-white p-2 rounded-xl fixed top-4 left-4 z-50 hover:from-blue-600 hover:to-blue-700 active:scale-95 transition-all duration-200 shadow-lg"
               aria-label="Toggle Sidebar"
             >
               <img
                 src="../src/assets/chevron-triple-right.svg"
-                alt="backButton"
+                alt="Show Sidebar"
                 className="w-6 h-6"
               />
             </button>
@@ -339,6 +502,8 @@ function App() {
                       onDeleteTask={handleDeleteTask}
                       onEditTask={handleEditTask}
                       onAddTaskFile={handleAddTaskFile}
+                      onCompleteTask={handleCompleteTask}
+                      onEditWorkflow={handleEditWorkflow}
                       userProfile={userProfile}
                       theme={theme}  
                     />
@@ -357,6 +522,7 @@ function App() {
                   />
                 }
               />
+              
               <Route path="/AboutUs" element={<AboutUs />} />
               <Route path="*" element={<Navigate to="/" />} />
             </Routes>
@@ -372,4 +538,5 @@ function App() {
     </>
   );
 }
+
 export default App;
