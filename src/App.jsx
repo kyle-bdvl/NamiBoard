@@ -49,8 +49,6 @@ function App() {
     accent: 'blue'
   });
 
-  // Notification state
-  const [notifications, setNotifications] = useState([]);
 
   // User performance tracking for analytics
   const [userActivity, setUserActivity] = useState({
@@ -392,40 +390,11 @@ function App() {
     }));
   }
 
-  // Check for upcoming deadlines and add notifications
+  // Check for upcoming deadlines 
   useEffect(() => {
     const checkDeadlines = () => {
       const today = new Date();
-      const newNotifications = [];
-
-      if (projectsState.WorkFlow && Array.isArray(projectsState.WorkFlow)) {
-        projectsState.WorkFlow.forEach(workflow => {
-          if (workflow.dueDate) {
-            const dueDate = new Date(workflow.dueDate);
-            const daysUntilDue = Math.ceil((dueDate - today) / (1000 * 60 * 60 * 24));
-            
-            if ([7, 3, 1].includes(daysUntilDue) && daysUntilDue > 0) {
-              newNotifications.push({
-                id: `deadline-${workflow.id}-${daysUntilDue}`,
-                type: 'deadline',
-                title: `Project Due Soon`,
-                message: `"${workflow.title}" is due in ${daysUntilDue} day${daysUntilDue > 1 ? 's' : ''}`,
-                timestamp: new Date().toISOString(),
-                workflowId: workflow.id
-              });
-            }
-          }
-        });
-      }
-
-      if (newNotifications.length > 0) {
-        setNotifications(prev => [
-          ...newNotifications.filter(newNotif => 
-            !prev.some(existingNotif => existingNotif.id === newNotif.id)
-          ),
-          ...prev
-        ]);
-      }
+    
     };
 
     // Only check on mount and when workflows change
@@ -440,7 +409,7 @@ function App() {
   const dismissNotification = (notificationId) => {
     setNotifications(prev => prev.filter(notif => notif.id !== notificationId));
   };
-
+  console.log(projectsState)
   return (
     <>
       {loggedIn ? (
@@ -491,6 +460,7 @@ function App() {
                   ) : projectsState.selectedWorkFlowId === undefined ? (
                     <NoBoardSelected startWorkFlow={handleStartWorkFlow} />
                   ) : (
+                    
                     <SelectedKanbanBoard
                       workFlow={projectsState.WorkFlow.find(
                         workflow => workflow.id === projectsState.selectedWorkFlowId
