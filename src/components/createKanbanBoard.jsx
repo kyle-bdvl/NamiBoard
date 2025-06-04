@@ -1,15 +1,40 @@
-import { useRef } from 'react';
+import { useRef , useState} from 'react';
 import Input from './Input.jsx';
 import Button from './Buttons.jsx';
 
-export default function CreateKanbanBoard({ onAdd, onCancel , theme }) {
+export default function CreateKanbanBoard({ onAdd, onCancel, theme }) {
   const title = useRef();
   const objective = useRef();
   const dueDate = useRef();
+  const [errors, setErrors] = useState({});
 
- 
 
-   let hoverClasses = '';
+
+  const validateForm = () => {
+    const newErrors = {};
+    const enteredTitle = title.current.value.trim();
+    const enteredObjective = objective.current.value.trim();
+    const enteredDueDate = dueDate.current.value;
+
+    if (!enteredTitle) {
+      newErrors.title = "Project title is required";
+    }
+
+    if (!enteredObjective) {
+      newErrors.objective = "Project objective is required";
+    }
+
+    if (!enteredDueDate) {
+      newErrors.dueDate = "Due date is required";
+    } else if (new Date(enteredDueDate) <= new Date()) {
+      newErrors.dueDate = "Due date must be in the future";
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  let hoverClasses = '';
 
   if (theme.title === 'bg-blue-900') {
     hoverClasses = 'hover:bg-blue-700 hover:text-white hover:ring-2 hover:ring-blue-900 hover:ring-offset-2';
@@ -36,16 +61,11 @@ export default function CreateKanbanBoard({ onAdd, onCancel , theme }) {
     const enteredObjective = objective.current.value;
     const enteredDueDate = dueDate.current.value;
 
-    if (!enteredTitle.trim()===' ' || !enteredObjective.trim()=== ' ' || !enteredDueDate) {
-      alert("All fields are required.");
-      return;
-    }
-    if (new Date(enteredDueDate) < new Date()) {
-      alert("Due date cannot be in the past.");
+    if (!validateForm()) {
       return;
     }
 
-   
+
     onAdd({
       title: enteredTitle,
       objective: enteredObjective,
@@ -58,9 +78,21 @@ export default function CreateKanbanBoard({ onAdd, onCancel , theme }) {
       <h2 className="text-2xl font-bold text-gray-800 mb-6">Create Kanban Board</h2>
 
       <form onSubmit={handleSave} className="space-y-4">
-        <Input theme={theme} type="text" ref={title} label="Title" required />
-        <Input theme={theme} textarea ref={objective} label="Objective" required />
-        <Input theme={theme} type="date" ref={dueDate} label="Due Date" required />
+        <div>
+          <Input theme={theme} type="text" ref={title} label="Title" required />
+          {errors.title && <p className="text-red-500 text-sm mt-1">{errors.title}</p>}
+
+        </div>
+        <div>
+          <Input theme={theme} textarea ref={objective} label="Objective" required />
+          {errors.objective && <p className="text-red-500 text-sm mt-1">{errors.objective}</p>}
+
+        </div>
+        <div>
+          <Input theme={theme} type="date" ref={dueDate} label="Due Date" required min={new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString().split('T')[0]} />
+          {errors.dueDate && <p className="text-red-500 text-sm mt-1">{errors.dueDate}</p>}
+
+        </div>
       </form>
 
       <menu className="flex justify-end gap-4 mt-8">

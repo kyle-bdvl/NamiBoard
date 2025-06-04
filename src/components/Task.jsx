@@ -10,12 +10,12 @@ export default function Task({ task, columnId, onDelete, onEdit, onAddFile }) {
 
   const handleEditSubmit = (e) => {
     e.preventDefault();
-    onEdit(editTitle, editDescription);  // Remove columnId and taskId since they're handled in the parent
+    onEdit(editTitle, editDescription);  // ColumnId/taskId handled in parent
     setShowEditModal(false);
   };
 
   return (
-    <li className="bg-white p-3 rounded shadow text-sm space-y-2 ">
+    <li className="bg-white p-4 rounded-md shadow border border-gray-200 text-sm space-y-2">
       <div className="flex justify-between items-start">
         <h4 className="font-semibold text-base flex-1 break-all">{task.title}</h4>
         <button
@@ -57,80 +57,84 @@ export default function Task({ task, columnId, onDelete, onEdit, onAddFile }) {
 
       {/* Task options modal */}
       <Modal open={showTaskModal} onClose={() => setShowTaskModal(false)}>
-        <button
-          className="block w-full text-left py-2 hover:bg-gray-100"
-          onClick={() => {
-            setShowTaskModal(false);
-            setEditTitle(task.title);
-            setEditDescription(task.description || "");
-            setShowEditModal(true);
-          }}
-        >
-          Edit Task
-        </button>
-        <button
-          className="block w-full text-left py-2 text-red-600 hover:bg-gray-100"
-          onClick={() => {
-            onDelete();
-            setShowTaskModal(false);
-          }}
-        >
-          Delete Task
-        </button>
+        <div className="p-4 bg-white rounded-md shadow-md">
+          <button
+            className="block w-full text-left py-2 hover:bg-gray-100"
+            onClick={() => {
+              setShowTaskModal(false);
+              setEditTitle(task.title);
+              setEditDescription(task.description || "");
+              setShowEditModal(true);
+            }}
+          >
+            Edit Task
+          </button>
+          <button
+            className="block w-full text-left py-2 text-red-600 hover:bg-gray-100"
+            onClick={() => {
+              onDelete();
+              setShowTaskModal(false);
+            }}
+          >
+            Delete Task
+          </button>
+        </div>
       </Modal>
 
       {/* Edit Task Modal */}
       <Modal open={showEditModal} onClose={() => setShowEditModal(false)}>
-        <form onSubmit={handleEditSubmit}>
-          <div className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700">
-                Title
-              </label>
-              <input
-                type="text"
-                value={editTitle}
-                onChange={(e) => setEditTitle(e.target.value)}
-                className="mt-1 w-full rounded-md border border-gray-300 p-2"
-                required
-              />
+        <div className="p-6 bg-white rounded-md shadow-md">
+          <form onSubmit={handleEditSubmit}>
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700">
+                  Title
+                </label>
+                <input
+                  type="text"
+                  value={editTitle}
+                  onChange={(e) => setEditTitle(e.target.value)}
+                  className="mt-1 w-full rounded-md border border-gray-300 p-2"
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">
+                  Description
+                </label>
+                <textarea
+                  value={editDescription}
+                  onChange={(e) => setEditDescription(e.target.value)}
+                  className="mt-1 w-full rounded-md border border-gray-300 p-2"
+                  rows="3"
+                />
+              </div>
+              <div className="flex justify-end gap-2">
+                <button
+                  type="button"
+                  onClick={() => setShowEditModal(false)}
+                  className="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+                >
+                  Save Changes
+                </button>
+              </div>
             </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700">
-                Description
-              </label>
-              <textarea
-                value={editDescription}
-                onChange={(e) => setEditDescription(e.target.value)}
-                className="mt-1 w-full rounded-md border border-gray-300 p-2"
-                rows="3"
-              />
-            </div>
-            <div className="flex justify-end gap-2">
-              <button
-                type="button"
-                onClick={() => setShowEditModal(false)}
-                className="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded"
-              >
-                Cancel
-              </button>
-              <button
-                type="submit"
-                className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-              >
-                Save Changes
-              </button>
-            </div>
-          </div>
-        </form>
+          </form>
+        </div>
       </Modal>
 
       {/* File upload modal */}
       <Modal open={showFileModal} onClose={() => setShowFileModal(false)}>
-        <div>
+        <div className="p-6 bg-white rounded-md shadow-md text-center">
           <input
             type="file"
-            onChange={e => {
+            onChange={(e) => {
               if (e.target.files && e.target.files[0]) {
                 onAddFile(e.target.files[0]);
                 setShowFileModal(false);

@@ -32,7 +32,6 @@ export default function Settings({ userProfile, setUserProfile, settingsClicked,
 
   // changing the theme color for the inputs 
   let focusBorder = '';
-
   if (theme.title === 'bg-blue-900') {
     focusBorder = 'focus:ring-blue-600';
   } else if (theme.title === 'bg-green-900') {
@@ -52,7 +51,7 @@ export default function Settings({ userProfile, setUserProfile, settingsClicked,
   }
 
   // Changing the color for hovering on the button  
-  let hoverClasses =''
+  let hoverClasses ='';
   if (theme.title === 'bg-blue-900') {
     hoverClasses = 'bg-blue-500 hover:bg-blue-700 hover:text-white hover:ring-2 hover:ring-blue-900 hover:ring-offset-2';
   } else if (theme.title === 'bg-green-900') {
@@ -71,15 +70,74 @@ export default function Settings({ userProfile, setUserProfile, settingsClicked,
     hoverClasses = 'bg-gray-500 hover:bg-blue-700 hover:text-white hover:ring-2 hover:ring-blue-900 hover:ring-offset-2';
   }
 
+  // New variable to change text color based on theme
+  let themeTextColor = '';
+  if (theme.title === 'bg-blue-900') {
+    themeTextColor = 'text-blue-800';
+  } else if (theme.title === 'bg-green-900') {
+    themeTextColor = 'text-green-800';
+  } else if (theme.title === 'bg-purple-900') {
+    themeTextColor = 'text-purple-800';
+  } else if (theme.title === 'bg-red-900') {
+    themeTextColor = 'text-red-800';
+  } else if (theme.title === 'bg-yellow-900') {
+    themeTextColor = 'text-yellow-800';
+  } else if (theme.title === 'bg-indigo-900') {
+    themeTextColor = 'text-indigo-800';
+  } else if (theme.title === 'bg-gray-900') {
+    themeTextColor = 'text-gray-800';
+  } else {
+    themeTextColor = 'text-blue-800';
+  }
+  
+  // New variables to change Profile Summary background and border based on theme
+  let profileBg = '';
+  let profileBorder = '';
+  if (theme.title === 'bg-blue-900') {
+    profileBg = 'bg-blue-50';
+    profileBorder = 'border-blue-200';
+  } else if (theme.title === 'bg-green-900') {
+    profileBg = 'bg-green-50';
+    profileBorder = 'border-green-200';
+  } else if (theme.title === 'bg-purple-900') {
+    profileBg = 'bg-purple-50';
+    profileBorder = 'border-purple-200';
+  } else if (theme.title === 'bg-red-900') {
+    profileBg = 'bg-red-50';
+    profileBorder = 'border-red-200';
+  } else if (theme.title === 'bg-yellow-900') {
+    profileBg = 'bg-yellow-50';
+    profileBorder = 'border-yellow-200';
+  } else if (theme.title === 'bg-indigo-900') {
+    profileBg = 'bg-indigo-50';
+    profileBorder = 'border-indigo-200';
+  } else if (theme.title === 'bg-gray-900') {
+    profileBg = 'bg-gray-50';
+    profileBorder = 'border-gray-200';
+  } else {
+    profileBg = 'bg-blue-50';
+    profileBorder = 'border-blue-200';
+  }
+
   return (
     <div className="min-h-screen bg-blue-50 p-8 relative">
       <div className="max-w-3xl mx-auto bg-white rounded-2xl shadow-lg p-8">
         {/* Page Title */}
-        <h1 className="text-3xl font-bold text-blue-800 mb-6">Settings</h1>
+        <h1 className={`text-4xl font-extrabold ${themeTextColor} mb-6 border-b-2 ${themeTextColor} pb-2`}>
+          Settings
+        </h1>
+
+        {/* Profile Summary */}
+        <section className={`mb-6 ${profileBg} p-4 rounded-md border ${profileBorder}`}>
+          <h2 className={`text-xl font-bold ${themeTextColor} mb-2`}>Profile Summary</h2>
+          <p className="text-gray-700">
+            Hello, {firstName} {lastName}. Your registered email is {email}.
+          </p>
+        </section>
 
         {/* Profile Section with First Name, Last Name, Email */}
         <section className="mb-6">
-          <h2 className="text-xl font-semibold text-gray-800 mb-2">Profile</h2>
+          <h2 className={`text-xl font-semibold ${themeTextColor} mb-2`}>Profile</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm text-gray-600">First Name</label>
@@ -116,7 +174,7 @@ export default function Settings({ userProfile, setUserProfile, settingsClicked,
 
         {/* Preferences Section */}
         <section className="mb-6">
-          <h2 className="text-xl font-semibold text-gray-800 mb-2">Preferences</h2>
+          <h2 className={`text-xl font-semibold ${themeTextColor} mb-2`}>Preferences</h2>
           <div className="flex items-center gap-3">
             <input type="checkbox" id="notifications" className="w-4 h-4" />
             <label htmlFor="notifications" className="text-sm text-gray-700">
@@ -125,11 +183,19 @@ export default function Settings({ userProfile, setUserProfile, settingsClicked,
           </div>
         </section>
 
+        {/* Tips & Help */}
+        <section className="mb-6 bg-yellow-50 p-4 rounded-md border border-yellow-200">
+          <h2 className={`text-xl font-bold ${themeTextColor} mb-2`}>Tips & Help</h2>
+          <p className="text-gray-700">
+            Need assistance? Check out our FAQ or contact support for help.
+          </p>
+        </section>
+
         {/* Save & Cancel Buttons */}
         <div className="mt-8 flex gap-4">
           <button
             onClick={handleSave}
-            className={` ${hoverClasses} text-white px-6 py-2 rounded-lg  transition`}
+            className={` ${hoverClasses} text-white px-6 py-2 rounded-lg transition`}
           >
             Save Changes
           </button>

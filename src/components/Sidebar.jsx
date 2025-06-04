@@ -28,6 +28,10 @@ export default function Sidebar({
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [newWorkflowTitle, setNewWorkflowTitle] = useState("");
 
+  // Length of WorkFlow
+  const lengthWorkflow = workFlows.length;
+  let tasksCount=0;
+
   const handleLogout = () => {
     setAboutUsClicked(false);
     setSettingsClicked(false);
@@ -186,7 +190,7 @@ export default function Sidebar({
         </div>
 
         {/* Add Workflow Button */}
-        <div className="flex flex-row justify-center">
+        <div className="flex flex-row justify-center ">
           <Button row={true} onClick={handleAddWorkflow} className={`${theme.sidebar} ${hoverClasses}`}>
             Add WorkFlow
             <img
@@ -198,17 +202,19 @@ export default function Sidebar({
         </div>
 
         {/* Workflow List */}
-        <div>
+        <div className='flex flex-col justify-start'>
           <h3 className="text-lg font-bold text-gray-700 mb-2">
-            Your Workflows
+            Your Workflows ({lengthWorkflow})
           </h3>
           {workFlows.length === 0 ? (
             <p className="text-sm text-gray-500 mt-2">No workflows yet.</p>
           ) : (
             <ul className="CustomScrollbar rounded-sm max-h-79 overflow-y-auto">
               {workFlows.map((work) => (
-                <li key={work.id} className="w-full">
-                  <div className={`w-full my-0.5 rounded-2xl flex items-center transition-colors h-12 duration-300 ${
+                 // counts number of Column and Tasks in the workFlow
+                tasksCount =work.columns?.reduce((total, col) => total + (col.tasks?.length || 0), 0) || 0,
+                <li key={work.id} className="w-full mb-3">
+                  <div className={`w-full my-0.5 rounded-2xl flex items-center transition-colors h-18 duration-300 ${
                     work.id === selectedWorkFlowId
                       ? `${theme.title} text-white`
                       : `workflow-hover ${getThemeColor(theme.title)}`
@@ -225,6 +231,11 @@ export default function Sidebar({
                       <span className="block">
                         {work.title}
                       </span>
+                       <div className="flex items-center gap-2 mt-1 text-xs opacity-75">
+                          <span>{work.columns?.length || 0} columns</span>
+                          <span>•</span>
+                          <span>{tasksCount} tasks</span>
+                        </div>
                     </button>
                     <button
                     // Only handle this click here—don't let it bubble up to any parent onClick handlers
