@@ -441,6 +441,7 @@ function App() {
     setNotifications(prev => prev.filter(notif => notif.id !== notificationId));
   };
 
+  console.log(projectsState);
   return (
     <>
       {loggedIn ? (
