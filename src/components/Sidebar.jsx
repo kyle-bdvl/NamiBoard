@@ -217,6 +217,7 @@ export default function Sidebar({
             <p className="text-sm text-gray-500 mt-2">No workflows yet.</p>
           ) : (
             <ul className="CustomScrollbar rounded-sm max-h-79 overflow-y-auto">
+<<<<<<< Updated upstream
               {sortedWorkflows.map((work) => {
                 tasksCount = work.columns?.reduce((total, col) => total + (col.tasks?.length || 0), 0) || 0;
                 return (
@@ -258,6 +259,41 @@ export default function Sidebar({
                   </li>
                 );
               })}
+=======
+              {workFlows.map((work) => (
+                <li key={work.id} className="w-full">
+                  <div className={`w-full my-1 rounded-2xl flex items-center transition-colors h-12 duration-300 ${
+                    work.id === selectedWorkFlowId
+                      ? `${theme.title} text-white`
+                      : `workflow-hover ${getThemeColor(theme.title)}`
+                  }`}>
+                    <button
+                      onClick={() => {
+                        setAboutUsClicked(false);
+                        setSettingsClicked(false);
+                        onSelectKanban(work.id);
+                        navigate('/');
+                      }}
+                      className="flex-1 break-all h-full text-left px-4 relative z-10"
+                    >
+                      <span className="block">
+                        {work.title}
+                      </span>
+                    </button>
+                    <button
+                    // Only handle this click here—don't let it bubble up to any parent onClick handlers
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleWorkflowOptions(work);
+                      }}
+                      className="px-4 h-full relative z-10 hover:text-white"
+                    >
+                      ...
+                    </button>
+                  </div>
+                </li>
+              ))}
+>>>>>>> Stashed changes
             </ul>
           )}
         </div>
