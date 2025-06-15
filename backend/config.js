@@ -1,10 +1,10 @@
-require ('dotenv').config();
+
 const config = {
   db: {
     host: "localhost",
-    user: "root",
-    password: process.env.DB_PASSWORD, // Add your MySQL password here
-    database: "testbackend",
+    user: 'root',
+    password: '{put your password}', // Add your MySQL password here
+    database: 'testbackend',
     port: 3306
   }
 };
