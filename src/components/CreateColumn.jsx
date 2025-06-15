@@ -14,23 +14,26 @@ const COLUMN_COLORS = [
 
 export default function CreateColumn({ onAdd, done,theme }) {
   const columnTitle = useRef();
+  const columnDesc = useRef();
   const [selectedColor, setSelectedColor] = useState(COLUMN_COLORS[0]);
 
   function handleColumnTitle() {
     const enteredTitle = columnTitle.current.value;
+    const enteredDesc = columnDesc.current.value;
     if (enteredTitle.trim() === '') {
       alert("Please insert a value");
       return;
     }
-    onAdd({ title: enteredTitle, color: selectedColor });
+    onAdd({ title: enteredTitle, description: enteredDesc, color: selectedColor });
     done();
   }
 
   return (
     <div className="w-full max-w-sm p-4 bg-white rounded-md shadow-md">
       <Input theme={theme} label={"Column Name"} ref={columnTitle} />
-      
+      <Input theme={theme} label={"Column Description"} ref={columnDesc} textarea={true} />
       <div className="mb-4">
+        
         <label className="block text-sm font-medium text-gray-700 mb-2">
           Column Color
         </label>
