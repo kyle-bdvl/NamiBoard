@@ -14,8 +14,14 @@ import './App.css';
 
 function App() {
   // Backend state
-  const [backend, setBackend] = useState([{}]);
+    // Example:
+  // const response = await fetch('/api/login', { method: 'POST', body: JSON.stringify({ email, password }) });
+  // if (!response.ok) throw new Error('Invalid credentials');
+  // return await response.json();
 
+  // TEMP: Remove this block when backend is ready
+  const [backend, setBackend] = useState([{}]);
+  // const [count, setCount] = useState(0);
   useEffect(() => {
     fetch("/api").then(
       response => response.json()

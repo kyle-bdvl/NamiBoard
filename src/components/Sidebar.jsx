@@ -211,13 +211,14 @@ export default function Sidebar({
         {/* Workflow List */}
         <div className='flex flex-col justify-start'>
           <h3 className="text-lg font-bold text-gray-700 mb-2">
-            Your Workflows ({lengthWorkflow})
+           📋 Your Workflows ({lengthWorkflow})
           </h3>
           {workFlows.length === 0 ? (
             <p className="text-sm text-gray-500 mt-2">No workflows yet.</p>
           ) : (
             <ul className="CustomScrollbar rounded-sm max-h-79 overflow-y-auto">
               {sortedWorkflows.map((work) => {
+                // To calculate the number of columns in the WorkFlow.Column.Task Array
                 tasksCount = work.columns?.reduce((total, col) => total + (col.tasks?.length || 0), 0) || 0;
                 return (
                   <li key={work.id} className="w-full mb-3">
