@@ -2,23 +2,28 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import bgImage from "../assets/background.jpg";
 
-// Placeholder for backend signup function
-// Backend devs can replace this with an actual API call
+// Replace the existing registerUser function with:
 async function registerUser({ firstName, lastName, email, password }) {
-  // Example:
-  // const response = await fetch('/api/signup', {
-  //   method: 'POST',
-  //   headers: { 'Content-Type': 'application/json' },
-  //   body: JSON.stringify({ firstName, lastName, email, password })
-  // });
-  // if (!response.ok) throw new Error('Signup failed');
-  // return await response.json();
+  const response = await fetch('http://localhost:5000/api/signup', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      firstName,
+      lastName,
+      email,
+      password
+    })
+  });
 
-  // TEMP: Remove this block when backend is ready
-  if (email === "admin@gmail.com") {
-    throw new Error("Email already exists!");
+  const data = await response.json();
+  
+  if (!response.ok) {
+    throw new Error(data.error || 'Failed to register');
   }
-  return { success: true };
+  
+  return data;
 }
 
 function SignUpPage() {

@@ -14,8 +14,14 @@ import './App.css';
 
 function App() {
   // Backend state
-  const [backend, setBackend] = useState([{}]);
+    // Example:
+  // const response = await fetch('/api/login', { method: 'POST', body: JSON.stringify({ email, password }) });
+  // if (!response.ok) throw new Error('Invalid credentials');
+  // return await response.json();
 
+  // TEMP: Remove this block when backend is ready
+  const [backend, setBackend] = useState([{}]);
+  // const [count, setCount] = useState(0);
   useEffect(() => {
     fetch("/api").then(
       response => response.json()
@@ -36,11 +42,7 @@ function App() {
     WorkFlow: []
   });
   const [settingsClicked, setSettingsClicked] = useState(false);
-  const [userProfile, setUserProfile] = useState({
-    firstName: "Molly",
-    lastName: "Potter",
-    email: "molly@example.com"
-  });
+  const [userProfile, setUserProfile] = useState(null);
   
   // Theme state with enhanced colors
   const [theme, setTheme] = useState({ 
@@ -49,8 +51,6 @@ function App() {
     accent: 'blue'
   });
 
-  // Notification state
-  const [notifications, setNotifications] = useState([]);
 
   // User performance tracking for analytics
   const [userActivity, setUserActivity] = useState({
@@ -61,8 +61,34 @@ function App() {
     completionRate: 72
   });
 
-  function handleLogin() {
+  // Update handleLogin to accept user data
+  function handleLogin(userData) {
     setLoggedIn(true);
+    setUserProfile({
+      firstName: userData.firstName,
+      lastName: userData.lastName,
+      email: userData.email
+    });
+    
+    // Optionally store in localStorage for persistence
+    localStorage.setItem('userProfile', JSON.stringify(userData));
+  }
+
+  // Add useEffect to check for stored user data on app load
+  useEffect(() => {
+    const storedUserData = localStorage.getItem('userProfile');
+    if (storedUserData) {
+      const userData = JSON.parse(storedUserData);
+      setUserProfile(userData);
+      setLoggedIn(true);
+    }
+  }, []);
+
+  // Update logout handling to clear user data
+  function handleLogout() {
+    setLoggedIn(false);
+    setUserProfile(null);
+    localStorage.removeItem('userProfile');
   }
 
   // Enhanced task priority sorting function
@@ -340,92 +366,99 @@ function App() {
     })
   }
 
-  function handleAddWorkFlow(dataPassed) {
-    setProjectsState((prevState) => {
-      const workFlowId = Math.random();
-      const newWorkFlow = {
-        ...dataPassed,
-        id: workFlowId,
-        columns: [],
-        createdAt: new Date().toISOString()
-      };
-      
-      // Update user activity
+  async function handleAddWorkFlow(dataPassed) {
+    try {
+      const response = await fetch('http://localhost:5000/api/workflows', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(dataPassed)
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to create workflow');
+      }
+
+      const newWorkflow = await response.json();
+
+      setProjectsState((prevState) => ({
+        ...prevState,
+        selectedWorkFlowId: undefined,
+        WorkFlow: [newWorkflow, ...prevState.WorkFlow]
+      }));
+
       setUserActivity(prev => ({
         ...prev,
         projectsCreated: prev.projectsCreated + 1
       }));
-      
-      return {
-        ...prevState,
-        selectedWorkFlowId: undefined,
-        WorkFlow: [newWorkFlow, ...prevState.WorkFlow]
-      };
-    });
+
+    } catch (error) {
+      console.error('Error creating workflow:', error);
+    }
   }
 
   function handleSelectKanban(id) {
     setProjectsState(prevState => ({ ...prevState, selectedWorkFlowId: id }));
   }
 
-  function handleEditWorkflow(workflowId, updateData) {
-    setProjectsState(prevState => ({
-      ...prevState,
-      WorkFlow: prevState.WorkFlow.map(workflow =>
-        workflow.id === workflowId
-          ? { 
-              ...workflow, 
-              title: updateData.title || workflow.title,
-              objective: updateData.objective || workflow.objective,
-              dueDate: updateData.dueDate || workflow.dueDate
-            }
-          : workflow
-      )
-    }));
+  async function handleEditWorkflow(workflowId, updateData) {
+    try {
+      const response = await fetch(`http://localhost:5000/api/workflows/${workflowId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(updateData)
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to update workflow');
+      }
+
+      setProjectsState(prevState => ({
+        ...prevState,
+        WorkFlow: prevState.WorkFlow.map(workflow =>
+          workflow.id === workflowId
+            ? { 
+                ...workflow, 
+                ...updateData
+              }
+            : workflow
+        )
+      }));
+
+    } catch (error) {
+      console.error('Error updating workflow:', error);
+    }
   }
 
-  function handleDeleteWorkflow(workflowId) {
-    setProjectsState(prevState => ({
-      ...prevState,
-      selectedWorkFlowId: prevState.selectedWorkFlowId === workflowId ? undefined : prevState.selectedWorkFlowId,
-      WorkFlow: prevState.WorkFlow.filter(workflow => workflow.id !== workflowId)
-    }));
+  async function handleDeleteWorkflow(workflowId) {
+    try {
+      const response = await fetch(`http://localhost:5000/api/workflows/${workflowId}`, {
+        method: 'DELETE'
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to delete workflow');
+      }
+
+      setProjectsState(prevState => ({
+        ...prevState,
+        selectedWorkFlowId: prevState.selectedWorkFlowId === workflowId ? undefined : prevState.selectedWorkFlowId,
+        WorkFlow: prevState.WorkFlow.filter(workflow => workflow.id !== workflowId)
+      }));
+
+    } catch (error) {
+      console.error('Error deleting workflow:', error);
+    }
   }
 
-  // Check for upcoming deadlines and add notifications
+  // Check for upcoming deadlines 
   useEffect(() => {
     const checkDeadlines = () => {
       const today = new Date();
-      const newNotifications = [];
-
-      if (projectsState.WorkFlow && Array.isArray(projectsState.WorkFlow)) {
-        projectsState.WorkFlow.forEach(workflow => {
-          if (workflow.dueDate) {
-            const dueDate = new Date(workflow.dueDate);
-            const daysUntilDue = Math.ceil((dueDate - today) / (1000 * 60 * 60 * 24));
-            
-            if ([7, 3, 1].includes(daysUntilDue) && daysUntilDue > 0) {
-              newNotifications.push({
-                id: `deadline-${workflow.id}-${daysUntilDue}`,
-                type: 'deadline',
-                title: `Project Due Soon`,
-                message: `"${workflow.title}" is due in ${daysUntilDue} day${daysUntilDue > 1 ? 's' : ''}`,
-                timestamp: new Date().toISOString(),
-                workflowId: workflow.id
-              });
-            }
-          }
-        });
-      }
-
-      if (newNotifications.length > 0) {
-        setNotifications(prev => [
-          ...newNotifications.filter(newNotif => 
-            !prev.some(existingNotif => existingNotif.id === newNotif.id)
-          ),
-          ...prev
-        ]);
-      }
+    
     };
 
     // Only check on mount and when workflows change
@@ -440,8 +473,7 @@ function App() {
   const dismissNotification = (notificationId) => {
     setNotifications(prev => prev.filter(notif => notif.id !== notificationId));
   };
-
-  console.log(projectsState);
+  console.log(projectsState)
   return (
     <>
       {loggedIn ? (
@@ -454,7 +486,7 @@ function App() {
               workFlows={projectsState.WorkFlow}
               onSelectKanban={handleSelectKanban}
               onSideBarToggle={() => setHideSideBar(!SideBar)}
-              onLogout={() => setLoggedIn(false)}
+              onLogout={handleLogout}
               settingsClicked={settingsClicked}
               setSettingsClicked={setSettingsClicked}
               selectedWorkFlowId={projectsState.selectedWorkFlowId}
@@ -462,6 +494,7 @@ function App() {
               setTheme={setTheme}
               onEditWorkflow={handleEditWorkflow}
               onDeleteWorkflow={handleDeleteWorkflow}
+              userProfile={userProfile}
             />
           ) : (
             <button
@@ -492,6 +525,7 @@ function App() {
                   ) : projectsState.selectedWorkFlowId === undefined ? (
                     <NoBoardSelected startWorkFlow={handleStartWorkFlow} />
                   ) : (
+                    
                     <SelectedKanbanBoard
                       workFlow={projectsState.WorkFlow.find(
                         workflow => workflow.id === projectsState.selectedWorkFlowId
