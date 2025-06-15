@@ -2,23 +2,30 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import bgImage from "../assets/background.jpg";
 
-// Placeholder for backend login function
-// Backend devs can replace this with an actual API call
+// Replace the placeholder loginUser function with actual backend call
 async function loginUser(email, password) {
-  // Example:
-  // const response = await fetch('/api/login', { method: 'POST', body: JSON.stringify({ email, password }) });
-  // if (!response.ok) throw new Error('Invalid credentials');
-  // return await response.json();
+  try {
+    const response = await fetch('http://localhost:5000/api/login', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ email, password })
+    });
 
-  // TEMP: Remove this block when backend is ready
-  if (email === "admin@gmail.com" && password === "12345") {
-    return { success: true };
-  } else {
-    throw new Error("Invalid email or password!");
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.error || 'Login failed');
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    throw new Error(error.message || 'Login failed');
   }
 }
 
-function LoginPage({ onLogin ,backend}) {
+function LoginPage({ onLogin, backend }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -33,26 +40,20 @@ function LoginPage({ onLogin ,backend}) {
     }
 
     try {
-      // Call backend login function
-      await loginUser(email, password);
+      const result = await loginUser(email, password);
       setError("");
+      // Store user data if needed
+      localStorage.setItem('userData', JSON.stringify(result.user));
       onLogin();
+      navigate("/");
     } catch (err) {
       setError(err.message);
-      setEmail("");
       setPassword("");
     }
   }
 
   return (
     <>
-      <div>
-        {backend.users && backend ? (
-          backend.users.map((user, i) => <p key={i}>{user}</p>)
-        ) : (
-          <p>Loading...</p>
-        )}
-      </div>
       <div
         className="flex items-center justify-center min-h-screen"
         style={{
@@ -62,25 +63,7 @@ function LoginPage({ onLogin ,backend}) {
         }}
       >
         <form
-          onSubmit={async (e) => {
-            e.preventDefault();
-
-            if (email.trim() === "" || password.trim() === "") {
-              setError("Please fill in all fields");
-              return;
-            }
-
-            try {
-              await loginUser(email, password);
-              setError("");
-              onLogin();         // this sets loggedIn = true in App
-              navigate("/");     // ⬅️ this is what you're missing!
-            } catch (err) {
-              setError(err.message);
-              setEmail("");
-              setPassword("");
-            }
-          }}
+          onSubmit={handleSubmit}
           className="bg-white p-8 rounded-2xl shadow-2xl w-full max-w-md"
         >
           <h2 className="text-2xl font-extrabold mb-6 text-center text-indigo-700 tracking-wide">

@@ -14,7 +14,6 @@ export default function SelectedKanbanBoard({
   onAddTaskFile,
   onCompleteTask,
   onEditWorkflow,
-  userProfile,
   theme
 }) {
   const [showColumn, setShowColumn] = useState(false);
@@ -81,12 +80,9 @@ export default function SelectedKanbanBoard({
 
   return (
     <main className="flex flex-col flex-grow p-6 bg-gradient-to-br from-slate-50 to-slate-100 overflow-x-auto min-h-screen">
-      {/* Header Section */}
       <Header 
         workFlow={workFlow} 
-        userProfile={userProfile} 
         theme={theme} 
-        onEditWorkflow={onEditWorkflow}
       />
 
       {/* Project Statistics */}

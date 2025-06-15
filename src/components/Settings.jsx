@@ -2,18 +2,54 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 export default function Settings({ userProfile, setUserProfile, settingsClicked, setSettingsClicked, theme }) {
-  // Local state for form fields
-  const [firstName, setFirstName] = useState(userProfile.firstName);
-  const [lastName, setLastName] = useState(userProfile.lastName);
-  const [email, setEmail] = useState(userProfile.email);
-
-  // Modal state
+  const [firstName, setFirstName] = useState(userProfile?.firstName || '');
+  const [lastName, setLastName] = useState(userProfile?.lastName || '');
+  const [email, setEmail] = useState(userProfile?.email || '');
   const [showModal, setShowModal] = useState(false);
+  const [error, setError] = useState('');
   const navigate = useNavigate();
 
-  const handleSave = () => {
-    setUserProfile({ firstName, lastName, email });
-    setShowModal(true);
+  const handleSave = async () => {
+    try {
+      const response = await fetch('http://localhost:5000/api/users/profile', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          firstName,
+          lastName,
+          email
+        })
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to update profile');
+      }
+
+      // Update local state
+      setUserProfile({
+        firstName,
+        lastName,
+        email
+      });
+
+      // Update localStorage if you're using it
+      const userData = JSON.parse(localStorage.getItem('userData') || '{}');
+      localStorage.setItem('userData', JSON.stringify({
+        ...userData,
+        firstName,
+        lastName,
+        email
+      }));
+
+      setShowModal(true);
+      setError('');
+    } catch (err) {
+      setError(err.message);
+    }
   };
 
   const handleCancel = () => {
@@ -121,6 +157,13 @@ export default function Settings({ userProfile, setUserProfile, settingsClicked,
 
   return (
     <div className="min-h-screen bg-blue-50 p-8 relative">
+      {/* Add error message display */}
+      {error && (
+        <div className="mb-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+          {error}
+        </div>
+      )}
+
       <div className="max-w-3xl mx-auto bg-white rounded-2xl shadow-lg p-8">
         {/* Page Title */}
         <h1 className={`text-4xl font-extrabold ${themeTextColor} mb-6 border-b-2 ${themeTextColor} pb-2`}>
@@ -195,7 +238,7 @@ export default function Settings({ userProfile, setUserProfile, settingsClicked,
         <div className="mt-8 flex gap-4">
           <button
             onClick={handleSave}
-            className={` ${hoverClasses} text-white px-6 py-2 rounded-lg transition`}
+            className={`${hoverClasses} text-white px-6 py-2 rounded-lg transition`}
           >
             Save Changes
           </button>
