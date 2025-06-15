@@ -87,6 +87,56 @@ app.post('/api/login', (req, res) => {
   );
 });
 
+// User Profile Update Endpoint
+app.put('/api/users/profile', (req, res) => {
+  const { firstName, lastName, email } = req.body;
+
+  // Basic validation
+  if (!firstName || !lastName || !email) {
+    return res.status(400).json({ error: 'All fields are required' });
+  }
+
+  // Update user in database
+  pool.query(
+    'UPDATE users SET firstName = ?, lastName = ? WHERE email = ?',
+    [firstName, lastName, email],
+    (error, results) => {
+      if (error) {
+        console.error('Database error:', error);
+        return res.status(500).json({ error: 'Error updating profile' });
+      }
+      
+      if (results.affectedRows === 0) {
+        return res.status(404).json({ error: 'User not found' });
+      }
+
+      res.json({ 
+        message: 'Profile updated successfully',
+        user: { firstName, lastName, email }
+      });
+    }
+  );
+});
+
+// Add this new endpoint
+app.get('/api/user/:email', (req, res) => {
+  const { email } = req.params;
+  
+  pool.query(
+    'SELECT firstName, lastName, email FROM users WHERE email = ?',
+    [email],
+    (error, results) => {
+      if (error) {
+        return res.status(500).json({ error: 'Error fetching user data' });
+      }
+      if (results.length === 0) {
+        return res.status(404).json({ error: 'User not found' });
+      }
+      res.json(results[0]);
+    }
+  );
+});
+
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
 });

@@ -42,11 +42,7 @@ function App() {
     WorkFlow: []
   });
   const [settingsClicked, setSettingsClicked] = useState(false);
-  const [userProfile, setUserProfile] = useState({
-    firstName: "Molly",
-    lastName: "Potter",
-    email: "molly@example.com"
-  });
+  const [userProfile, setUserProfile] = useState(null);
   
   // Theme state with enhanced colors
   const [theme, setTheme] = useState({ 
@@ -65,8 +61,34 @@ function App() {
     completionRate: 72
   });
 
-  function handleLogin() {
+  // Update handleLogin to accept user data
+  function handleLogin(userData) {
     setLoggedIn(true);
+    setUserProfile({
+      firstName: userData.firstName,
+      lastName: userData.lastName,
+      email: userData.email
+    });
+    
+    // Optionally store in localStorage for persistence
+    localStorage.setItem('userProfile', JSON.stringify(userData));
+  }
+
+  // Add useEffect to check for stored user data on app load
+  useEffect(() => {
+    const storedUserData = localStorage.getItem('userProfile');
+    if (storedUserData) {
+      const userData = JSON.parse(storedUserData);
+      setUserProfile(userData);
+      setLoggedIn(true);
+    }
+  }, []);
+
+  // Update logout handling to clear user data
+  function handleLogout() {
+    setLoggedIn(false);
+    setUserProfile(null);
+    localStorage.removeItem('userProfile');
   }
 
   // Enhanced task priority sorting function
@@ -428,7 +450,7 @@ function App() {
               workFlows={projectsState.WorkFlow}
               onSelectKanban={handleSelectKanban}
               onSideBarToggle={() => setHideSideBar(!SideBar)}
-              onLogout={() => setLoggedIn(false)}
+              onLogout={handleLogout}
               settingsClicked={settingsClicked}
               setSettingsClicked={setSettingsClicked}
               selectedWorkFlowId={projectsState.selectedWorkFlowId}
@@ -436,6 +458,7 @@ function App() {
               setTheme={setTheme}
               onEditWorkflow={handleEditWorkflow}
               onDeleteWorkflow={handleDeleteWorkflow}
+              userProfile={userProfile}
             />
           ) : (
             <button

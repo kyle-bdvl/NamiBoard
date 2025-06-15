@@ -1,7 +1,36 @@
-export default function Header({ workFlow, userProfile, theme }) {
-  const { firstName, lastName } = userProfile;
-  const initials = `${firstName.charAt(0)}${lastName.charAt(0)}`;
-  //fopr
+import { useState, useEffect } from 'react';
+
+export default function Header({ workFlow, theme }) {
+  const [userData, setUserData] = useState(null);
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        // Get email from localStorage
+        const storedUser = JSON.parse(localStorage.getItem('userData'));
+        if (!storedUser?.email) return;
+
+        const response = await fetch(`http://localhost:5000/api/user/${storedUser.email}`);
+        const data = await response.json();
+        
+        if (!response.ok) throw new Error(data.error);
+        
+        setUserData(data);
+      } catch (error) {
+        console.error('Error fetching user data:', error);
+      }
+    };
+
+    fetchUserData();
+  }, []);
+
+  if (!userData) {
+    return <div className="h-20 bg-gray-100 animate-pulse rounded-lg" />; // Loading state
+  }
+
+  const { firstName, lastName } = userData;
+  const initials = `${firstName?.charAt(0)}${lastName?.charAt(0)}`;
+
   let gradientClass = "";
   if (theme.title === "bg-blue-900") {
     gradientClass = "bg-gradient-to-br from-blue-100 to-blue-50";
