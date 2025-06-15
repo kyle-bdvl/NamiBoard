@@ -107,7 +107,7 @@ app.put('/api/users/profile', (req, res) => {
       }
       
       if (results.affectedRows === 0) {
-        return res.status(404).json({ error: 'User not found' });
+        return res.status(404).json({ error: 'Email not found' });
       }
 
       res.json({ 
@@ -135,6 +135,91 @@ app.get('/api/user/:email', (req, res) => {
       res.json(results[0]);
     }
   );
+});
+
+// Add these new endpoints after existing ones
+
+// Create Workflow
+app.post('/api/workflows', (req, res) => {
+  const { title, objective, dueDate } = req.body;
+
+  if (!title) {
+    return res.status(400).json({ error: 'Title is required' });
+  }
+
+  pool.query(
+    'INSERT INTO workflows (title, objective, dueDate) VALUES (?, ?, ?)',
+    [title, objective, dueDate],
+    (error, results) => {
+      if (error) {
+        console.error('Database error:', error);
+        return res.status(500).json({ error: 'Error creating workflow' });
+      }
+      
+      res.status(201).json({ 
+        id: results.insertId,
+        title,
+        objective,
+        dueDate,
+        columns: []
+      });
+    }
+  );
+});
+
+// Get all workflows
+app.get('/api/workflows', (req, res) => {
+  pool.query(
+    `SELECT w.*, 
+      COUNT(DISTINCT c.id) as columnCount,
+      COUNT(DISTINCT t.id) as taskCount
+    FROM workflows w
+    LEFT JOIN columns c ON w.id = c.workflowId
+    LEFT JOIN tasks t ON c.id = t.columnId
+    GROUP BY w.id
+    ORDER BY w.createdAt DESC`,
+    (error, results) => {
+      if (error) {
+        return res.status(500).json({ error: 'Error fetching workflows' });
+      }
+      res.json(results);
+    }
+  );
+});
+
+// Update workflow
+app.put('/api/workflows/:id', (req, res) => {
+  const { id } = req.params;
+  const { title, objective, dueDate } = req.body;
+
+  pool.query(
+    'UPDATE workflows SET title = ?, objective = ?, dueDate = ? WHERE id = ?',
+    [title, objective, dueDate, id],
+    (error, results) => {
+      if (error) {
+        return res.status(500).json({ error: 'Error updating workflow' });
+      }
+      if (results.affectedRows === 0) {
+        return res.status(404).json({ error: 'Workflow not found' });
+      }
+      res.json({ message: 'Workflow updated successfully' });
+    }
+  );
+});
+
+// Delete workflow (will cascade delete columns and tasks)
+app.delete('/api/workflows/:id', (req, res) => {
+  const { id } = req.params;
+
+  pool.query('DELETE FROM workflows WHERE id = ?', [id], (error, results) => {
+    if (error) {
+      return res.status(500).json({ error: 'Error deleting workflow' });
+    }
+    if (results.affectedRows === 0) {
+      return res.status(404).json({ error: 'Workflow not found' });
+    }
+    res.json({ message: 'Workflow deleted successfully' });
+  });
 });
 
 app.listen(port, () => {

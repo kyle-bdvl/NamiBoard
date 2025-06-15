@@ -366,56 +366,92 @@ function App() {
     })
   }
 
-  function handleAddWorkFlow(dataPassed) {
-    setProjectsState((prevState) => {
-      const workFlowId = Math.random();
-      const newWorkFlow = {
-        ...dataPassed,
-        id: workFlowId,
-        columns: [],
-        createdAt: new Date().toISOString()
-      };
-      
-      // Update user activity
+  async function handleAddWorkFlow(dataPassed) {
+    try {
+      const response = await fetch('http://localhost:5000/api/workflows', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(dataPassed)
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to create workflow');
+      }
+
+      const newWorkflow = await response.json();
+
+      setProjectsState((prevState) => ({
+        ...prevState,
+        selectedWorkFlowId: undefined,
+        WorkFlow: [newWorkflow, ...prevState.WorkFlow]
+      }));
+
       setUserActivity(prev => ({
         ...prev,
         projectsCreated: prev.projectsCreated + 1
       }));
-      
-      return {
-        ...prevState,
-        selectedWorkFlowId: undefined,
-        WorkFlow: [newWorkFlow, ...prevState.WorkFlow]
-      };
-    });
+
+    } catch (error) {
+      console.error('Error creating workflow:', error);
+    }
   }
 
   function handleSelectKanban(id) {
     setProjectsState(prevState => ({ ...prevState, selectedWorkFlowId: id }));
   }
 
-  function handleEditWorkflow(workflowId, updateData) {
-    setProjectsState(prevState => ({
-      ...prevState,
-      WorkFlow: prevState.WorkFlow.map(workflow =>
-        workflow.id === workflowId
-          ? { 
-              ...workflow, 
-              title: updateData.title || workflow.title,
-              objective: updateData.objective || workflow.objective,
-              dueDate: updateData.dueDate || workflow.dueDate
-            }
-          : workflow
-      )
-    }));
+  async function handleEditWorkflow(workflowId, updateData) {
+    try {
+      const response = await fetch(`http://localhost:5000/api/workflows/${workflowId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(updateData)
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to update workflow');
+      }
+
+      setProjectsState(prevState => ({
+        ...prevState,
+        WorkFlow: prevState.WorkFlow.map(workflow =>
+          workflow.id === workflowId
+            ? { 
+                ...workflow, 
+                ...updateData
+              }
+            : workflow
+        )
+      }));
+
+    } catch (error) {
+      console.error('Error updating workflow:', error);
+    }
   }
 
-  function handleDeleteWorkflow(workflowId) {
-    setProjectsState(prevState => ({
-      ...prevState,
-      selectedWorkFlowId: prevState.selectedWorkFlowId === workflowId ? undefined : prevState.selectedWorkFlowId,
-      WorkFlow: prevState.WorkFlow.filter(workflow => workflow.id !== workflowId)
-    }));
+  async function handleDeleteWorkflow(workflowId) {
+    try {
+      const response = await fetch(`http://localhost:5000/api/workflows/${workflowId}`, {
+        method: 'DELETE'
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to delete workflow');
+      }
+
+      setProjectsState(prevState => ({
+        ...prevState,
+        selectedWorkFlowId: prevState.selectedWorkFlowId === workflowId ? undefined : prevState.selectedWorkFlowId,
+        WorkFlow: prevState.WorkFlow.filter(workflow => workflow.id !== workflowId)
+      }));
+
+    } catch (error) {
+      console.error('Error deleting workflow:', error);
+    }
   }
 
   // Check for upcoming deadlines 

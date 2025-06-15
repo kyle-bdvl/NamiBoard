@@ -160,7 +160,11 @@ export default function Sidebar({
   const handleSaveWorkflow = (e) => {
     e.preventDefault();
     if (editingWorkflow && newWorkflowTitle.trim()) {
-      onEditWorkflow(editingWorkflow.id, newWorkflowTitle.trim()); // Use the prop function
+      onEditWorkflow(editingWorkflow.id, {
+        title: newWorkflowTitle.trim(),
+        objective: editingWorkflow.objective, // preserve existing objective
+        dueDate: editingWorkflow.dueDate    // preserve existing dueDate
+      });
       setShowWorkflowModal(null);
       setEditingWorkflow(null);
     }
