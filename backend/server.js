@@ -3,6 +3,8 @@ const express = require('express');
 const mysql = require('mysql2');
 const config = require('./config');
 const cors = require('cors');
+const multer = require('multer');
+const upload = multer();
 const app = express();
 const port = 5000;
 
@@ -222,6 +224,136 @@ app.delete('/api/workflows/:id', (req, res) => {
     }
     res.json({ message: 'Workflow deleted successfully' });
   });
+});
+
+// Create a new column for a workflow
+app.post('/api/columns', (req, res) => {
+  console.log('Received column data:', req.body);
+  const { title, description, workflowId, color } = req.body;
+  if (!title || !workflowId) {
+    return res.status(400).json({ error: 'Title and workflowId are required' });
+  }
+  pool.query(
+    'INSERT INTO columns (title, description, color, workflowId) VALUES (?, ?, ?, ?)',
+    [title, description, color, workflowId],
+    (error, results) => {
+      if (error) {
+        return res.status(500).json({ error: 'Error creating column' });
+      }
+      res.status(201).json({
+        id: results.insertId,
+        title,
+        description,
+        color,
+        workflowId
+      });
+    }
+  );
+});
+
+// Get all columns for a workflow
+app.get('/api/workflows/:workflowId/columns', (req, res) => {
+  const { workflowId } = req.params;
+  pool.query(
+    'SELECT * FROM columns WHERE workflowId = ?',
+    [workflowId],
+    (error, results) => {
+      if (error) {
+        return res.status(500).json({ error: 'Error fetching columns' });
+      }
+      res.json(results);
+    }
+  );
+});
+
+// Get all workflows for a user, including columns
+app.get('/api/user/:userId/workflows-with-columns', (req, res) => {
+  const { userId } = req.params;
+  pool.query(
+    'SELECT * FROM workflows WHERE userId = ?',
+    [userId],
+    (err, workflows) => {
+      if (err) return res.status(500).json({ error: 'Error fetching workflows' });
+      if (workflows.length === 0) return res.json([]);
+
+      const workflowIds = workflows.map(wf => wf.id);
+      if (workflowIds.length === 0) return res.json(workflows);
+
+      pool.query(
+        'SELECT * FROM columns WHERE workflowId IN (?)',
+        [workflowIds],
+        (err, columns) => {
+          if (err) return res.status(500).json({ error: 'Error fetching columns' });
+
+          const workflowsWithColumns = workflows.map(wf => ({
+            ...wf,
+            columns: columns.filter(col => col.workflowId === wf.id)
+          }));
+          res.json(workflowsWithColumns);
+        }
+      );
+    }
+  );
+});
+
+// Create a new task for a column
+app.post('/api/tasks', (req, res) => {
+  const { title, description, priority, dueDate, file, columnId } = req.body;
+  if (!title || !columnId) {
+    return res.status(400).json({ error: 'Title and columnId are required' });
+  }
+  pool.query(
+    'INSERT INTO tasks (title, description, priority, dueDate, file, columnId) VALUES (?, ?, ?, ?, ?, ?)',
+    [title, description, priority, dueDate, file, columnId],
+    (error, results) => {
+      if (error) {
+        return res.status(500).json({ error: 'Error creating task' });
+      }
+      res.status(201).json({
+        id: results.insertId,
+        title,
+        description,
+        priority,
+        dueDate,
+        file,
+        columnId,
+        completed: false
+      });
+    }
+  );
+});
+
+// Get all tasks for a column
+app.get('/api/columns/:columnId/tasks', (req, res) => {
+  const { columnId } = req.params;
+  pool.query(
+    'SELECT * FROM tasks WHERE columnId = ?',
+    [columnId],
+    (error, results) => {
+      if (error) {
+        return res.status(500).json({ error: 'Error fetching tasks' });
+      }
+      res.json(results);
+    }
+  );
+});
+
+// Endpoint to serve task file
+app.get('/api/tasks/:taskId/file', (req, res) => {
+  const { taskId } = req.params;
+  pool.query(
+    'SELECT file, fileName, fileType FROM tasks WHERE id = ?',
+    [taskId],
+    (error, results) => {
+      if (error || results.length === 0) {
+        return res.status(404).json({ error: 'File not found' });
+      }
+      const { file, fileName, fileType } = results[0];
+      res.setHeader('Content-Disposition', `inline; filename="${fileName}"`);
+      res.setHeader('Content-Type', fileType);
+      res.send(file);
+    }
+  );
 });
 
 app.listen(port, () => {
