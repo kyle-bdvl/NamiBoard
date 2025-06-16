@@ -34,17 +34,15 @@ function LoginPage({ onLogin, backend }) {
   async function handleSubmit(e) {
     e.preventDefault();
 
-    if (email.trim() === "" || password.trim() === "") {
-      setError("Please fill in all fields");
-      return;
-    }
-
     try {
       const result = await loginUser(email, password);
-      setError("");
-      // Store user data if needed
-      localStorage.setItem('userData', JSON.stringify(result.user));
-      onLogin();
+      
+      if (!result.user || !result.user.email) {
+        throw new Error('Invalid response from server');
+      }
+
+      // Pass the complete user object
+      onLogin(result.user);
       navigate("/");
     } catch (err) {
       setError(err.message);

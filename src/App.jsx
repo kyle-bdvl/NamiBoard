@@ -61,8 +61,16 @@ function App() {
     completionRate: 72
   });
 
-  // Update handleLogin to accept user data
+  // Update the handleLogin function
   function handleLogin(userData) {
+    if (!userData) {
+      console.error('No user data provided to handleLogin');
+      return;
+    }
+
+    console.log('Login successful with data:', userData);
+    
+    // Set both login state and user profile
     setLoggedIn(true);
     setUserProfile({
       firstName: userData.firstName,
@@ -70,17 +78,26 @@ function App() {
       email: userData.email
     });
     
-    // Optionally store in localStorage for persistence
+    // Store both in localStorage
     localStorage.setItem('userProfile', JSON.stringify(userData));
+    localStorage.setItem('isLoggedIn', 'true');
   }
 
-  // Add useEffect to check for stored user data on app load
+  // Update the useEffect for checking stored user data
   useEffect(() => {
     const storedUserData = localStorage.getItem('userProfile');
-    if (storedUserData) {
+    const isLoggedIn = localStorage.getItem('isLoggedIn');
+
+    if (storedUserData && isLoggedIn === 'true') {
       const userData = JSON.parse(storedUserData);
       setUserProfile(userData);
       setLoggedIn(true);
+    } else {
+      // If either is missing, reset both
+      setLoggedIn(false);
+      setUserProfile(null);
+      localStorage.removeItem('userProfile');
+      localStorage.removeItem('isLoggedIn');
     }
   }, []);
 
@@ -89,6 +106,11 @@ function App() {
     setLoggedIn(false);
     setUserProfile(null);
     localStorage.removeItem('userProfile');
+    localStorage.removeItem('isLoggedIn');
+    setProjectsState({
+      selectedWorkFlowId: undefined,
+      WorkFlow: []
+    });
   }
 
   // Enhanced task priority sorting function
@@ -366,21 +388,34 @@ function App() {
     })
   }
 
+  // Modify handleAddWorkFlow function
   async function handleAddWorkFlow(dataPassed) {
     try {
+      console.log('Current user profile:', userProfile); // Add debug logging
+    
+      if (!userProfile?.email) {
+        console.log('Login state:', loggedIn); // Add debug logging
+        throw new Error('User not logged in. Please log in again.');
+      }
+
       const response = await fetch('http://localhost:5000/api/workflows', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(dataPassed)
+        body: JSON.stringify({
+          ...dataPassed,
+          userId: userProfile.email
+        })
       });
 
       if (!response.ok) {
-        throw new Error('Failed to create workflow');
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to create workflow');
       }
 
       const newWorkflow = await response.json();
+      console.log('Workflow created:', newWorkflow); // Add debug logging
 
       setProjectsState((prevState) => ({
         ...prevState,
@@ -388,19 +423,34 @@ function App() {
         WorkFlow: [newWorkflow, ...prevState.WorkFlow]
       }));
 
-      setUserActivity(prev => ({
-        ...prev,
-        projectsCreated: prev.projectsCreated + 1
-      }));
-
     } catch (error) {
       console.error('Error creating workflow:', error);
+      alert(error.message);
     }
   }
 
-  function handleSelectKanban(id) {
-    setProjectsState(prevState => ({ ...prevState, selectedWorkFlowId: id }));
-  }
+  // Add a useEffect to fetch user-specific workflows after login
+  useEffect(() => {
+    const fetchUserWorkflows = async () => {
+      if (userProfile?.email) {
+        try {
+          const response = await fetch(`http://localhost:5000/api/workflows/${userProfile.email}`);
+          if (!response.ok) {
+            throw new Error('Failed to fetch workflows');
+          }
+          const workflows = await response.json();
+          setProjectsState(prev => ({
+            ...prev,
+            WorkFlow: workflows
+          }));
+        } catch (error) {
+          console.error('Error fetching workflows:', error);
+        }
+      }
+    };
+
+    fetchUserWorkflows();
+  }, [userProfile?.email]);
 
   async function handleEditWorkflow(workflowId, updateData) {
     try {
@@ -474,6 +524,14 @@ function App() {
     setNotifications(prev => prev.filter(notif => notif.id !== notificationId));
   };
   console.log(projectsState)
+
+  function handleSelectKanban(workflowId) {
+    setProjectsState(prevState => ({
+      ...prevState,
+      selectedWorkFlowId: workflowId
+    }));
+  }
+
   return (
     <>
       {loggedIn ? (
