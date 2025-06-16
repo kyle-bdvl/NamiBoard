@@ -139,17 +139,17 @@ app.get('/api/user/:email', (req, res) => {
 
 // Add these new endpoints after existing ones
 
-// Create Workflow
+// Create Workflow - Modified to include userId
 app.post('/api/workflows', (req, res) => {
-  const { title, objective, dueDate } = req.body;
+  const { title, objective, dueDate, userId } = req.body;
 
-  if (!title) {
-    return res.status(400).json({ error: 'Title is required' });
+  if (!title || !userId) {
+    return res.status(400).json({ error: 'Title and userId are required' });
   }
 
   pool.query(
-    'INSERT INTO workflows (title, objective, dueDate) VALUES (?, ?, ?)',
-    [title, objective, dueDate],
+    'INSERT INTO workflows (title, objective, dueDate, userId) VALUES (?, ?, ?, ?)',
+    [title, objective, dueDate, userId],
     (error, results) => {
       if (error) {
         console.error('Database error:', error);
@@ -161,14 +161,17 @@ app.post('/api/workflows', (req, res) => {
         title,
         objective,
         dueDate,
+        userId,
         columns: []
       });
     }
   );
 });
 
-// Get all workflows
-app.get('/api/workflows', (req, res) => {
+// Get workflows - Modified to filter by userId
+app.get('/api/workflows/:userId', (req, res) => {
+  const { userId } = req.params;
+
   pool.query(
     `SELECT w.*, 
       COUNT(DISTINCT c.id) as columnCount,
@@ -176,8 +179,10 @@ app.get('/api/workflows', (req, res) => {
     FROM workflows w
     LEFT JOIN columns c ON w.id = c.workflowId
     LEFT JOIN tasks t ON c.id = t.columnId
+    WHERE w.userId = ?
     GROUP BY w.id
     ORDER BY w.createdAt DESC`,
+    [userId],
     (error, results) => {
       if (error) {
         return res.status(500).json({ error: 'Error fetching workflows' });
