@@ -55,29 +55,32 @@ export default function CreateKanbanBoard({ onAdd, onCancel, theme }) {
   }
 
 
-  function handleSave(e) {
-    e.preventDefault();
-    const enteredTitle = title.current.value;
-    const enteredObjective = objective.current.value;
-    const enteredDueDate = dueDate.current.value;
+  function handleSave(e) {  // Add event parameter
+    e.preventDefault();  // Prevent form submission
+    
+    try {
+      const enteredTitle = title.current.value;
+      const enteredObjective = objective.current.value;
+      const enteredDueDate = dueDate.current.value;
 
-    if (!validateForm()) {
-      return;
+      if (validateForm()) {  // Use the validation function
+        onAdd({
+          title: enteredTitle,
+          objective: enteredObjective,
+          dueDate: enteredDueDate
+        });
+      }
+    } catch (error) {
+      console.error('Error saving workflow:', error);
+      alert('Failed to create workflow. Please try again.');
     }
-
-
-    onAdd({
-      title: enteredTitle,
-      objective: enteredObjective,
-      dueDate: enteredDueDate
-    });
   }
 
   return (
     <div className={`max-w-2xl mx-auto mt-10 p-8 rounded-2xl bg-white shadow-md border-1`}>
       <h2 className="text-2xl font-bold text-gray-800 mb-6">Create Kanban Board</h2>
 
-      <form onSubmit={handleSave} className="space-y-4">
+      <form className="space-y-4">
         <div>
           <Input theme={theme} type="text" ref={title} label="Title" required />
           {errors.title && <p className="text-red-500 text-sm mt-1">{errors.title}</p>}
@@ -97,12 +100,12 @@ export default function CreateKanbanBoard({ onAdd, onCancel, theme }) {
 
       <menu className="flex justify-end gap-4 mt-8">
         <li>
-          <Button onClick={handleSave} row={true} className={`${theme.sidebar} ${hoverClasses}`}>
+          <Button onClick={handleSave} type="submit" row={true} className={`${theme.sidebar} ${hoverClasses}`}>
             Save
           </Button>
         </li>
         <li>
-          <Button onClick={onCancel} row={true} className={`${theme.sidebar} ${hoverClasses}`}>
+          <Button onClick={onCancel} type="button" row={true} className={`${theme.sidebar} ${hoverClasses}`}>
             Cancel
           </Button>
         </li>
