@@ -18,12 +18,15 @@ export default function SelectedKanbanBoard({
 }) {
   const [showColumn, setShowColumn] = useState(false);
 
+  // Add this function:
   function handleShowCreateColumn() {
-    setShowColumn((prev) => !prev);
+    setShowColumn(prev => !prev);
   }
 
-  function handleCreateColumn(columnData) {
-    onAddColumn(columnData);
+  // When a new column is added, refetch columns and update parent state
+  async function handleCreateColumn(columnData) {
+    await onAddColumn({ ...columnData, workflowId: workFlow.id });
+    // Optionally, you can trigger handleSelectKanban again to refresh columns
   }
 
   // Memoize theme styles
@@ -174,42 +177,22 @@ export default function SelectedKanbanBoard({
       </div>
 
       {/* Columns Section */}
-      {workFlow.columns?.length > 0 ? (
-        <div className="flex-1">
-          <Column
-            columns={workFlow.columns}
-            workFlow={workFlow}
-            onAddTask={onAddTask}
-            onDeleteColumn={onDeleteColumn}
-            onEditColumn={onEditColumn}
-            onDeleteTask={onDeleteTask}
-            onEditTask={onEditTask}
-            onAddTaskFile={onAddTaskFile}
-            onCompleteTask={onCompleteTask}
-          />
-        </div>
-      ) : (
-        <div className="flex-1 flex items-center justify-center">
-          <div className="text-center bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-white/50 p-12 max-w-md">
-            <div className="text-6xl mb-6">📝</div>
-            <h3 className="text-2xl font-bold text-gray-800 mb-4">Ready to Organize?</h3>
-            <p className="text-gray-600 mb-6">
-              Start by creating your first column to organize your tasks. 
-              Common columns include "To Do", "In Progress", and "Done".
-            </p>
-            <button
-              onClick={handleShowCreateColumn}
-              className={`bg-gradient-to-r ${themeStyles} text-white px-6 py-3 rounded-xl font-semibold hover:shadow-lg transition-all duration-200 hover:scale-105 flex items-center gap-2 mx-auto`}
-            >
-              <span className="text-lg">🚀</span>
-              Create First Column
-            </button>
-          </div>
-        </div>
-      )}
+      <div className="flex-1">
+        <Column
+          columns={workFlow?.columns || []}
+          workFlow={workFlow}
+          onAddTask={onAddTask}
+          onDeleteColumn={onDeleteColumn}
+          onEditColumn={onEditColumn}
+          onDeleteTask={onDeleteTask}
+          onEditTask={onEditTask}
+          onAddTaskFile={onAddTaskFile}
+          onCompleteTask={onCompleteTask}
+        />
+      </div>
 
       {/* Floating Action Tips */}
-      {workFlow.columns?.length === 0 && (
+      {workFlow?.columns?.length === 0 && (
         <div className="fixed bottom-6 right-6 bg-blue-500 text-white p-4 rounded-xl shadow-lg max-w-sm">
           <div className="flex items-start gap-3">
             <div className="text-2xl">💡</div>

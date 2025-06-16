@@ -153,27 +153,37 @@ function App() {
     });
   }
 
-  function handleAddColumnToWorkflow(columnData) {
-    setProjectsState((prevState) => {
+  async function handleAddColumnToWorkflow(columnData) {
+    // 1. Create the column in the backend
+    const response = await fetch('/api/columns', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        title: columnData.title,
+        description: columnData.description,
+        color: columnData.color,
+        workflowId: columnData.workflowId
+      })
+    });
+
+    if (!response.ok) {
+      alert('Failed to create column');
+      return;
+    }
+
+    // 2. Fetch updated columns for the workflow
+    const columnsRes = await fetch(`/api/workflows/${columnData.workflowId}/columns`);
+    const columns = await columnsRes.json();
+
+    // 3. Update the workflow in your state with the new columns
+    setProjectsState(prevState => {
       const updatedWorkflows = prevState.WorkFlow.map(workflow => {
-        if (workflow.id === prevState.selectedWorkFlowId) {
-          return {
-            ...workflow,
-            columns: [{
-              id: Math.random(),
-              ...columnData,
-              color: columnData.color || 'bg-gradient-to-br from-blue-50 to-blue-100',
-              tasks: []
-            }, ...workflow.columns]
-          };
+        if (workflow.id === columnData.workflowId) {
+          return { ...workflow, columns };
         }
         return workflow;
       });
-
-      return {
-        ...prevState,
-        WorkFlow: updatedWorkflows
-      };
+      return { ...prevState, WorkFlow: updatedWorkflows };
     });
   }
 
@@ -197,53 +207,45 @@ function App() {
     });
   }
 
-  function handleAddTaskToColumn(columnId, title, description, file, priority = 'medium', dueDate = null) {
-    setProjectsState((prevState) => {
+  async function handleAddTaskToColumn(columnId, title, description, file, priority = 'medium', dueDate = null) {
+    // 1. Create the task in the backend
+    const response = await fetch('/api/tasks', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        title,
+        description,
+        priority,
+        dueDate,
+        file: file ? file.name : null, // You may want to handle file uploads separately
+        columnId
+      })
+    });
+
+    if (!response.ok) {
+      alert('Failed to create task');
+      return;
+    }
+
+    // 2. Fetch updated tasks for the column
+    const tasksRes = await fetch(`/api/columns/${columnId}/tasks`);
+    const tasks = await tasksRes.json();
+
+    // 3. Update the column in your state with the new tasks
+    setProjectsState(prevState => {
       const updatedWorkflows = prevState.WorkFlow.map(workflow => {
         if (workflow.id === prevState.selectedWorkFlowId) {
           const updatedColumns = workflow.columns.map(column => {
             if (column.id === columnId) {
-              const newTask = {
-                id: Date.now(),
-                title,
-                description,
-                file: file || null,
-                priority,
-                dueDate,
-                createdAt: new Date().toISOString(),
-                completed: false
-              };
-              
-              const updatedTasks = sortTasksByPriorityAndDate([
-                ...(column.tasks || []),
-                newTask
-              ]);
-              
-              return {
-                ...column,
-                tasks: updatedTasks
-              };
+              return { ...column, tasks };
             }
             return column;
           });
-          return {
-            ...workflow,
-            columns: updatedColumns
-          };
+          return { ...workflow, columns: updatedColumns };
         }
         return workflow;
       });
-
-      // Update user activity
-      setUserActivity(prev => ({
-        ...prev,
-        tasksCompleted: prev.tasksCompleted + 1
-      }));
-
-      return {
-        ...prevState,
-        WorkFlow: updatedWorkflows
-      };
+      return { ...prevState, WorkFlow: updatedWorkflows };
     });
   }
 
@@ -550,11 +552,34 @@ function App() {
   };
   console.log(projectsState)
 
-  function handleSelectKanban(workflowId) {
+  async function handleSelectKanban(workflowId) {
     setProjectsState(prevState => ({
       ...prevState,
       selectedWorkFlowId: workflowId
     }));
+
+    try {
+      const columnsRes = await fetch(`/api/workflows/${workflowId}/columns`);
+      let columns = await columnsRes.json();
+
+      // Fetch tasks for each column
+      columns = await Promise.all(
+        columns.map(async (col) => {
+          const tasksRes = await fetch(`/api/columns/${col.id}/tasks`);
+          const tasks = await tasksRes.json();
+          return { ...col, tasks };
+        })
+      );
+
+      setProjectsState(prevState => ({
+        ...prevState,
+        WorkFlow: prevState.WorkFlow.map(wf =>
+          wf.id === workflowId ? { ...wf, columns } : wf
+        )
+      }));
+    } catch (err) {
+      console.error('Error fetching columns or tasks for workflow:', err);
+    }
   }
 
   return (
