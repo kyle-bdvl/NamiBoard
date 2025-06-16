@@ -81,7 +81,27 @@ function App() {
     // Store both in localStorage
     localStorage.setItem('userProfile', JSON.stringify(userData));
     localStorage.setItem('isLoggedIn', 'true');
+
+    // Fetch workflows immediately after login
+    fetchUserWorkflows(userData.email);
   }
+
+  // Add this helper function
+  const fetchUserWorkflows = async (email) => {
+    try {
+      const response = await fetch(`http://localhost:5000/api/workflows/${encodeURIComponent(email)}`);
+      if (!response.ok) {
+        throw new Error('Failed to fetch workflows');
+      }
+      const workflows = await response.json();
+      setProjectsState(prev => ({
+        ...prev,
+        WorkFlow: workflows
+      }));
+    } catch (error) {
+      console.error('Error fetching workflows:', error);
+    }
+  };
 
   // Update the useEffect for checking stored user data
   useEffect(() => {
@@ -429,16 +449,21 @@ function App() {
     }
   }
 
-  // Add a useEffect to fetch user-specific workflows after login
+  // Modify the useEffect for fetching workflows
   useEffect(() => {
     const fetchUserWorkflows = async () => {
       if (userProfile?.email) {
         try {
-          const response = await fetch(`http://localhost:5000/api/workflows/${userProfile.email}`);
+          console.log('Fetching workflows for:', userProfile.email);
+          const response = await fetch(`http://localhost:5000/api/workflows/${encodeURIComponent(userProfile.email)}`);
+          
           if (!response.ok) {
             throw new Error('Failed to fetch workflows');
           }
+          
           const workflows = await response.json();
+          console.log('Fetched workflows:', workflows);
+          
           setProjectsState(prev => ({
             ...prev,
             WorkFlow: workflows
@@ -450,7 +475,7 @@ function App() {
     };
 
     fetchUserWorkflows();
-  }, [userProfile?.email]);
+  }, [userProfile?.email, loggedIn]); // Add loggedIn to dependencies
 
   async function handleEditWorkflow(workflowId, updateData) {
     try {

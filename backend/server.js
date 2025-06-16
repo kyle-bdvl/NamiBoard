@@ -168,25 +168,22 @@ app.post('/api/workflows', (req, res) => {
   );
 });
 
-// Get workflows - Modified to filter by userId
+// Get workflows for specific user
 app.get('/api/workflows/:userId', (req, res) => {
   const { userId } = req.params;
 
+  // Add console.log for debugging
+  console.log('Fetching workflows for user:', userId);
+
   pool.query(
-    `SELECT w.*, 
-      COUNT(DISTINCT c.id) as columnCount,
-      COUNT(DISTINCT t.id) as taskCount
-    FROM workflows w
-    LEFT JOIN columns c ON w.id = c.workflowId
-    LEFT JOIN tasks t ON c.id = t.columnId
-    WHERE w.userId = ?
-    GROUP BY w.id
-    ORDER BY w.createdAt DESC`,
+    `SELECT * FROM workflows WHERE userId = ?`,
     [userId],
     (error, results) => {
       if (error) {
+        console.error('Database error:', error);
         return res.status(500).json({ error: 'Error fetching workflows' });
       }
+      console.log('Found workflows:', results);
       res.json(results);
     }
   );
