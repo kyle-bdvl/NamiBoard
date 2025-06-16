@@ -3,27 +3,35 @@ import { useNavigate } from "react-router-dom";
 import bgImage from "../assets/background.jpg";
 
 // Replace the existing registerUser function with:
+// Update the registerUser function
 async function registerUser({ firstName, lastName, email, password }) {
-  const response = await fetch('http://localhost:5000/api/signup', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      firstName,
-      lastName,
-      email,
-      password
-    })
-  });
+  console.log('Attempting to register user...'); // Add debugging
+  try {
+    const response = await fetch('http://localhost:5000/api/signup', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      },
+      body: JSON.stringify({
+        firstName,
+        lastName,
+        email,
+        password
+      })
+    });
 
-  const data = await response.json();
-  
-  if (!response.ok) {
-    throw new Error(data.error || 'Failed to register');
+    const data = await response.json();
+    
+    if (!response.ok) {
+      throw new Error(data.error || 'Failed to register');
+    }
+    
+    return data;
+  } catch (error) {
+    console.error('Registration error:', error);
+    throw error;
   }
-  
-  return data;
 }
 
 function SignUpPage() {
