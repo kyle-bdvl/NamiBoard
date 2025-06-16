@@ -3,8 +3,8 @@ const config = {
   db: {
     host: "localhost",
     user: 'root',
-    password: 'ewingUPM@201', // Add your MySQL password here
-    database: 'webdevdatabase',
+    password: 'Mffjog123**', // Add your MySQL password here
+    database: 'testbackend',
     port: 3306
   }
 };
