@@ -11,7 +11,7 @@ export default function Task({ task, columnId, workFlow, onDelete, onEdit, onAdd
   const [editDueDate, setEditDueDate] = useState(task.dueDate || '');
   const [editErrors, setEditErrors] = useState({});
 
-  const handleEditSubmit = (e) => {
+  const handleEditSubmit = async (e) => {
     e.preventDefault();
     
     // Validate due date against workflow due date
@@ -29,10 +29,33 @@ export default function Task({ task, columnId, workFlow, onDelete, onEdit, onAdd
       setEditErrors(newErrors);
       return;
     }
-    
-    setEditErrors({});
-    onEdit(editTitle, editDescription, editPriority, editDueDate || null);
-    setShowEditModal(false);
+
+    try {
+      const response = await fetch(`http://localhost:5000/api/tasks/${task.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          title: editTitle,
+          description: editDescription,
+          priority: editPriority,
+          dueDate: editDueDate || null
+        })
+      });
+
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.error || 'Failed to update task');
+      }
+
+      setEditErrors({});
+      onEdit(editTitle, editDescription, editPriority, editDueDate || null);
+      setShowEditModal(false);
+    } catch (error) {
+      console.error('Error updating task:', error);
+      alert('Failed to update task: ' + error.message);
+    }
   };
 
   // Priority color mapping
@@ -200,9 +223,14 @@ export default function Task({ task, columnId, workFlow, onDelete, onEdit, onAdd
           </button>
           <button
             className="block w-full text-left py-3 px-4 text-red-600 hover:bg-red-50 rounded-md transition-colors"
-            onClick={() => {
-              onDelete();
-              setShowTaskModal(false);
+            onClick={async () => {
+              try {
+                await onDelete();  // This will trigger handleDeleteTask in App.jsx
+                setShowTaskModal(false);
+              } catch (error) {
+                console.error('Error deleting task:', error);
+                alert('Failed to delete task');
+              }
             }}
           >
             🗑️ Delete Task

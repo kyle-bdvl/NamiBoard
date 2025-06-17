@@ -361,3 +361,103 @@ app.listen(port, () => {
 });
 
 // Next step to display the information to the frontend
+
+// Add this with your other endpoints
+app.put('/api/columns/:id', (req, res) => {
+  const { id } = req.params;
+  const { title, description, color } = req.body;
+
+  console.log('Updating column:', { id, title, description, color });
+
+  if (!title) {
+    return res.status(400).json({ error: 'Title is required' });
+  }
+
+  pool.query(
+    'UPDATE columns SET title = ?, description = ?, color = ? WHERE id = ?',
+    [title, description, color, id],
+    (error, results) => {
+      if (error) {
+        console.error('Database error:', error);
+        return res.status(500).json({ error: 'Error updating column' });
+      }
+      
+      if (results.affectedRows === 0) {
+        return res.status(404).json({ error: 'Column not found' });
+      }
+
+      res.json({ 
+        message: 'Column updated successfully',
+        column: { id, title, description, color }
+      });
+    }
+  );
+});
+
+// Add the delete column endpoint
+app.delete('/api/columns/:id', (req, res) => {
+  const { id } = req.params;
+
+  console.log('Deleting column:', id);
+
+  pool.query('DELETE FROM columns WHERE id = ?', [id], (error, results) => {
+    if (error) {
+      console.error('Database error:', error);
+      return res.status(500).json({ error: 'Error deleting column' });
+    }
+    
+    if (results.affectedRows === 0) {
+      return res.status(404).json({ error: 'Column not found' });
+    }
+
+    res.json({ message: 'Column deleted successfully' });
+  });
+});
+
+// Update task endpoint
+app.put('/api/tasks/:id', (req, res) => {
+  const { id } = req.params;
+  const { title, description, priority, dueDate } = req.body;
+
+  console.log('Updating task:', { id, title, description, priority, dueDate });
+
+  pool.query(
+    'UPDATE tasks SET title = ?, description = ?, priority = ?, dueDate = ? WHERE id = ?',
+    [title, description, priority, dueDate, id],
+    (error, results) => {
+      if (error) {
+        console.error('Database error:', error);
+        return res.status(500).json({ error: 'Error updating task' });
+      }
+      
+      if (results.affectedRows === 0) {
+        return res.status(404).json({ error: 'Task not found' });
+      }
+
+      res.json({ 
+        message: 'Task updated successfully',
+        task: { id, title, description, priority, dueDate }
+      });
+    }
+  );
+});
+
+// Add this with your other endpoints
+app.delete('/api/tasks/:id', (req, res) => {
+  const { id } = req.params;
+
+  console.log('Deleting task:', id);
+
+  pool.query('DELETE FROM tasks WHERE id = ?', [id], (error, results) => {
+    if (error) {
+      console.error('Database error:', error);
+      return res.status(500).json({ error: 'Error deleting task' });
+    }
+    
+    if (results.affectedRows === 0) {
+      return res.status(404).json({ error: 'Task not found' });
+    }
+
+    res.json({ message: 'Task deleted successfully' });
+  });
+});

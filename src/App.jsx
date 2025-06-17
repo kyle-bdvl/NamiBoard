@@ -187,24 +187,38 @@ function App() {
     });
   }
 
-  function handleDeleteColumn(columnId) {
-    setProjectsState((prevState) => {
-      const updatedWorkflows = prevState.WorkFlow.map(workflow => {
-        if (workflow.id === prevState.selectedWorkFlowId) {
-          const updatedColumns = workflow.columns.filter(column => column.id !== columnId);
-          return {
-            ...workflow,
-            columns: updatedColumns
-          };
-        }
-        return workflow;
+  async function handleDeleteColumn(columnId) {
+    try {
+      const response = await fetch(`http://localhost:5000/api/columns/${columnId}`, {
+        method: 'DELETE'
       });
 
-      return {
-        ...prevState,
-        WorkFlow: updatedWorkflows
-      };
-    });
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || 'Failed to delete column');
+      }
+
+      // Update frontend state after successful deletion
+      setProjectsState((prevState) => {
+        const updatedWorkflows = prevState.WorkFlow.map(workflow => {
+          if (workflow.id === prevState.selectedWorkFlowId) {
+            return {
+              ...workflow,
+              columns: workflow.columns.filter(column => column.id !== columnId)
+            };
+          }
+          return workflow;
+        });
+
+        return {
+          ...prevState,
+          WorkFlow: updatedWorkflows
+        };
+      });
+    } catch (error) {
+      console.error('Error deleting column:', error);
+      alert('Failed to delete column: ' + error.message);
+    }
   }
 
   async function handleAddTaskToColumn(columnId, title, description, file, priority = 'medium', dueDate = null) {
@@ -249,34 +263,50 @@ function App() {
     });
   }
 
-  function handleDeleteTask(columnId, taskId) {
-    setProjectsState((prevState) => {
-      const updatedWorkflows = prevState.WorkFlow.map((workflow) => {
-        if (workflow.id === prevState.selectedWorkFlowId) {
-          const updatedColumns = workflow.columns.map((column) => {
-            if (column.id === columnId) {
-              const updatedTasks = (column.tasks || []).filter((task) => task.id !== taskId);
-              return {
-                ...column,
-                tasks: updatedTasks
-              };
-            }
-            return column;
-          });
-
-          return {
-            ...workflow,
-            columns: updatedColumns
-          };
-        }
-        return workflow;
+  // Replace the existing handleDeleteTask function with this:
+  async function handleDeleteTask(columnId, taskId) {
+    try {
+      // First, delete from database
+      const response = await fetch(`http://localhost:5000/api/tasks/${taskId}`, {
+        method: 'DELETE'
       });
 
-      return {
-        ...prevState,
-        WorkFlow: updatedWorkflows
-      };
-    });
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || 'Failed to delete task');
+      }
+
+      // Only update frontend state after successful database deletion
+      setProjectsState((prevState) => {
+        const updatedWorkflows = prevState.WorkFlow.map((workflow) => {
+          if (workflow.id === prevState.selectedWorkFlowId) {
+            const updatedColumns = workflow.columns.map((column) => {
+              if (column.id === columnId) {
+                return {
+                  ...column,
+                  tasks: (column.tasks || []).filter((task) => task.id !== taskId)
+                };
+              }
+              return column;
+            });
+
+            return {
+              ...workflow,
+              columns: updatedColumns
+            };
+          }
+          return workflow;
+        });
+
+        return {
+          ...prevState,
+          WorkFlow: updatedWorkflows
+        };
+      });
+    } catch (error) {
+      console.error('Error deleting task:', error);
+      alert('Failed to delete task: ' + error.message);
+    }
   }
 
   function handleEditColumn(columnId, newTitle, newDescription) {
@@ -296,37 +326,61 @@ function App() {
     });
   }
 
-  function handleEditTask(columnId, taskId, newTitle, newDescription, newPriority, newDueDate) {
-    setProjectsState((prevState) => {
-      const updatedWorkflows = prevState.WorkFlow.map(workflow => {
-        if (workflow.id === prevState.selectedWorkFlowId) {
-          const updatedColumns = workflow.columns.map(column => {
-            if (column.id === columnId) {
-              let updatedTasks = (column.tasks || []).map(task =>
-                task.id === taskId
-                  ? { 
-                      ...task, 
-                      title: newTitle, 
-                      description: newDescription,
-                      priority: newPriority || task.priority,
-                      dueDate: newDueDate !== undefined ? newDueDate : task.dueDate
-                    }
-                  : task
-              );
-              
-              // Re-sort tasks after editing
-              updatedTasks = sortTasksByPriorityAndDate(updatedTasks);
-              
-              return { ...column, tasks: updatedTasks };
-            }
-            return column;
-          });
-          return { ...workflow, columns: updatedColumns };
-        }
-        return workflow;
+  async function handleEditTask(columnId, taskId, newTitle, newDescription, newPriority, newDueDate) {
+    try {
+      const response = await fetch(`http://localhost:5000/api/tasks/${taskId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          title: newTitle,
+          description: newDescription,
+          priority: newPriority,
+          dueDate: newDueDate
+        })
       });
-      return { ...prevState, WorkFlow: updatedWorkflows };
-    });
+
+      if (!response.ok) {
+        throw new Error('Failed to update task');
+      }
+
+      // Update frontend state after successful database update
+      setProjectsState((prevState) => {
+        const updatedWorkflows = prevState.WorkFlow.map(workflow => {
+          if (workflow.id === prevState.selectedWorkFlowId) {
+            const updatedColumns = workflow.columns.map(column => {
+              if (column.id === columnId) {
+                let updatedTasks = (column.tasks || []).map(task =>
+                  task.id === taskId
+                    ? { 
+                        ...task, 
+                        title: newTitle, 
+                        description: newDescription,
+                        priority: newPriority || task.priority,
+                        dueDate: newDueDate !== undefined ? newDueDate : task.dueDate
+                      }
+                    : task
+                );
+                
+                // Re-sort tasks after editing
+                updatedTasks = sortTasksByPriorityAndDate(updatedTasks);
+                
+                return { ...column, tasks: updatedTasks };
+              }
+              return column;
+            });
+            return { ...workflow, columns: updatedColumns };
+          }
+          return workflow;
+        });
+        return { ...prevState, WorkFlow: updatedWorkflows };
+      });
+
+    } catch (error) {
+      console.error('Error updating task:', error);
+      alert('Failed to update task: ' + error.message);
+    }
   }
 
   function handleAddTaskFile(columnId, taskId, file) {

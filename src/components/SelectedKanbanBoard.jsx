@@ -29,6 +29,16 @@ export default function SelectedKanbanBoard({
     // Optionally, you can trigger handleSelectKanban again to refresh columns
   }
 
+  // Add this function:
+  function handleEditColumn(columnId, title, description, color) {
+    const updatedColumns = workFlow.columns.map(column => 
+      column.id === columnId 
+        ? { ...column, title, description, color }
+        : column
+    );
+    onEditColumn(workFlow.id, updatedColumns);
+  }
+
   // Memoize theme styles
   const themeStyles = useMemo(() => {
     const themeMap = {
@@ -60,8 +70,9 @@ export default function SelectedKanbanBoard({
           
           // Check if task is marked as completed OR in a "done/complete" column
           if (task.completed || 
-              column.title?.toLowerCase().includes('done') || 
-              column.title?.toLowerCase().includes('complete')) {
+              (typeof column.title === 'string' && 
+               (column.title.toLowerCase().includes('done') || 
+                column.title.toLowerCase().includes('complete')))) {
             completed++;
           }
           
