@@ -117,6 +117,41 @@ export default function Columns({
       return workFlow?.dueDate || null;
     };
 
+    const handleEditColumnSubmit = async (e) => {
+      e.preventDefault();
+      
+      try {
+        const response = await fetch(`http://localhost:5000/api/columns/${editColumn.id}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            title: colTitle,
+            description: colDesc,
+            color: editColumn.color
+          })
+        });
+
+        if (!response.ok) {
+          const data = await response.json();
+          throw new Error(data.error || 'Failed to update column');
+        }
+
+        // Update this section
+        onEditColumn(editColumn.id, colTitle, colDesc, editColumn.color);
+
+        // Reset form state
+        setEditColumn(null);
+        setColTitle('');
+        setColDesc('');
+        setShowColumnModal(null);
+      } catch (error) {
+        console.error('Error updating column:', error);
+        alert('Failed to update column: ' + error.message);
+      }
+    };
+
     return (
       <div className="mt-6">
         <div className="flex flex-row gap-6 overflow-x-auto pb-4">
@@ -201,9 +236,14 @@ export default function Columns({
                       </button>
                       <button
                         className="block w-full text-left py-3 px-4 text-red-600 hover:bg-red-50 rounded-md transition-colors"
-                        onClick={() => {
-                          onDeleteColumn(column.id);
-                          setShowColumnModal(null);
+                        onClick={async () => {
+                          try {
+                            await onDeleteColumn(column.id);
+                            setShowColumnModal(null);
+                          } catch (error) {
+                            console.error('Error deleting column:', error);
+                            alert('Failed to delete column');
+                          }
                         }}
                       >
                         🗑️ Delete Column
@@ -211,12 +251,7 @@ export default function Columns({
                     </div>
                   ) : (
                     <form
-                      onSubmit={e => {
-                        e.preventDefault();
-                        onEditColumn(editColumn.id, colTitle, colDesc);
-                        setShowColumnModal(null);
-                        setEditColumn(null);
-                      }}
+                      onSubmit={handleEditColumnSubmit}
                       className="space-y-4"
                     >
                       <h3 className="text-lg font-semibold text-gray-800">Edit Column</h3>
