@@ -114,3 +114,6 @@ npm run dev
 ```
 npm run dev
 ```
+
+### Additional Notes 
+Please adjust the Config.js file with the database, name and password that you are using
