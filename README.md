@@ -1,15 +1,41 @@
-# React + Vite
+#Namiboard - Kanban Task Management App
+A full-stack Kanban board application built with React, Express, and MySQL. This app allows users to manage workflows, columns, and tasks with user authentication and persistent storage.
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+#Features
+User Authentication: Sign up and log in with secure credentials.
+Personal Workflows: Each user has their own set of workflows (Kanban boards).
+Workflow Management: Create, edit, and delete workflows with objectives and due dates.
+Column Management: Add, edit, and delete columns within workflows.
+Task Management: Add, edit, complete, and delete tasks within columns.
+Persistent Storage: All data is stored in a MySQL database.
+Responsive UI: Built with React and Tailwind CSS for a modern, responsive experience.
+User Profile: Update your profile and settings.
+Analytics: Track productivity and completion rates.
+Real-Time Sync: UI updates reflect database changes immediately.
 
-Currently, two official plugins are available:
+## Tech Stack 
+Frontend: React, React Router, Tailwind CSS
+Backend: Node.js, Express
+Database: MySQL
+Other: CORS, dotenv
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+###Setup for NamiBoard
+```
+git clone https://github.com/yourusername/kanban-app.git
+cd kanban-app
+```
 
-## Expanding the ESLint configuration
+### install dependencies (frontend)
+```
+npm install
+```
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+### install dependencies (backend) 
+Note : open another terminal to run the backend simutaneously with the frontend
+```
+cd backend
+npm install
+```
 
 ## 📦 Dependencies Used
 
@@ -30,4 +56,57 @@ express
 mysql2  
 cors  
 dotenv   # for environment variables (if used)  
+```
+
+## Setting up Database (creating tables) 
+```
+CREATE TABLE users (
+    firstName VARCHAR(255) NOT NULL,
+    lastName VARCHAR(255) NOT NULL,
+    email VARCHAR(255) PRIMARY KEY,
+    password VARCHAR(255) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE workflows (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    title VARCHAR(255) NOT NULL,
+    objective TEXT,
+    dueDate DATE,
+    userId VARCHAR(255),
+    createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (userId) REFERENCES users(email) ON DELETE CASCADE
+);
+
+CREATE TABLE columns (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    workflowId INT,
+    title VARCHAR(255) NOT NULL,
+    description TEXT,
+    color VARCHAR(50),
+    FOREIGN KEY (workflowId) REFERENCES workflows(id) ON DELETE CASCADE
+);
+
+CREATE TABLE tasks (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    columnId INT,
+    title VARCHAR(255) NOT NULL,
+    description TEXT,
+    priority VARCHAR(20),
+    dueDate DATE,
+    completed BOOLEAN DEFAULT FALSE,
+    createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (columnId) REFERENCES columns(id) ON DELETE CASCADE
+);
+```
+
+### Start backend 
+```
+cd backend
+npm run dev
+```
+
+### start FrontEnd
+```
+npm run dev
 ```
