@@ -1,7 +1,7 @@
-#Namiboard - Kanban Task Management App
+###Namiboard - Kanban Task Management App
 A full-stack Kanban board application built with React, Express, and MySQL. This app allows users to manage workflows, columns, and tasks with user authentication and persistent storage.
 
-#Features
+###Features
 User Authentication: Sign up and log in with secure credentials.
 Personal Workflows: Each user has their own set of workflows (Kanban boards).
 Workflow Management: Create, edit, and delete workflows with objectives and due dates.
