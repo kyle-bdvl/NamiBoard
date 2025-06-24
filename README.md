@@ -1,25 +1,29 @@
-###Namiboard - Kanban Task Management App
+# Namiboard - Kanban Task Management App
+
 A full-stack Kanban board application built with React, Express, and MySQL. This app allows users to manage workflows, columns, and tasks with user authentication and persistent storage.
 
-###Features
-User Authentication: Sign up and log in with secure credentials.
-Personal Workflows: Each user has their own set of workflows (Kanban boards).
-Workflow Management: Create, edit, and delete workflows with objectives and due dates.
-Column Management: Add, edit, and delete columns within workflows.
-Task Management: Add, edit, complete, and delete tasks within columns.
-Persistent Storage: All data is stored in a MySQL database.
-Responsive UI: Built with React and Tailwind CSS for a modern, responsive experience.
-User Profile: Update your profile and settings.
-Analytics: Track productivity and completion rates.
-Real-Time Sync: UI updates reflect database changes immediately.
+## Features
 
-## Tech Stack 
-Frontend: React, React Router, Tailwind CSS
-Backend: Node.js, Express
-Database: MySQL
-Other: CORS, dotenv
+- **User Authentication**: Sign up and log in with secure credentials.  
+- **Personal Workflows**: Each user has their own set of workflows (Kanban boards).  
+- **Workflow Management**: Create, edit, and delete workflows with objectives and due dates.  
+- **Column Management**: Add, edit, and delete columns within workflows.  
+- **Task Management**: Add, edit, complete, and delete tasks within columns.  
+- **Persistent Storage**: All data is stored in a MySQL database.  
+- **Responsive UI**: Built with React and Tailwind CSS for a modern, responsive experience.  
+- **User Profile**: Update your profile and settings.  
+- **Analytics**: Track productivity and completion rates.  
+- **Real-Time Sync**: UI updates reflect database changes immediately.  
 
-###Setup for NamiBoard
+## 🛠 Tech Stack
+
+- **Frontend**: React, React Router, Tailwind CSS  
+- **Backend**: Node.js, Express  
+- **Database**: MySQL  
+- **Other**: CORS, dotenv  
+
+## ⚙️ Setup for NamiBoard
+
 ```
 git clone https://github.com/yourusername/kanban-app.git
 cd kanban-app
