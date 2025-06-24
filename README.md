@@ -42,24 +42,18 @@ npm install
 ```
 
 ## 📦 Dependencies Used
-
+Copy and paste these dependencies in order to use NamiBoard
 ### Frontend (`package.json`)
 ```
-react  
-react-dom  
-react-router-dom  
-@vitejs/plugin-react   # if using Vite  
-vite                   # if using Vite  
-tailwindcss            # if using Tailwind for styling  
-autoprefixer           # for Tailwind  
-postcss                # for Tailwind  
+npm install react react-dom react-router-dom
+npm install -D tailwindcss postcss autoprefixer
+npx tailwindcss init -p
 ```
 ### Backend (modules used) 
 ```
-express  
-mysql2  
-cors  
-dotenv   # for environment variables (if used)  
+cd backend
+npm init -y
+npm install express mysql2 cors dotenv multer
 ```
 
 ## Setting up Database (creating tables) 
